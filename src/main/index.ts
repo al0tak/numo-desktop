@@ -5,7 +5,12 @@ function createWindow(): void {
   const window = new BrowserWindow({
     width: 1024,
     height: 768,
-    show: false
+    show: false,
+    // Hides the OS title bar but keeps the native traffic lights on macOS.
+    titleBarStyle: 'hidden',
+    trafficLightPosition: { x: 16, y: 16 },
+    // Native window controls drawn over our own title bar on Windows/Linux.
+    titleBarOverlay: { color: '#dddddd', symbolColor: '#333333', height: 48 }
   })
 
   window.on('ready-to-show', () => window.show())

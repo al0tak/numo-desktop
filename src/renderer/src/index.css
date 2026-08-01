@@ -1,0 +1,51 @@
+:root {
+  --titlebar-height: 48px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: #dddddd;
+  color: #1a1a1a;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Whole strip is draggable; anything interactive inside must opt out. */
+.titlebar {
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  flex: 0 0 var(--titlebar-height);
+  /* Leave room for the traffic lights on the left. */
+  padding-left: 88px;
+  padding-right: 12px;
+  user-select: none;
+}
+
+.titlebar button,
+.titlebar input,
+.titlebar a,
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.content {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+}
