@@ -1,0 +1,54 @@
+/* Tint the base color per state so a variant only has to swap --button-color. */
+.homePageButton {
+  --button-color: var(--color-accent);
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 28px;
+  border-radius: 12px;
+  background: var(--button-color);
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  user-select: none;
+  transition:
+    background-color 120ms ease,
+    transform 120ms ease;
+}
+
+.homePageButton:hover {
+  background: color-mix(in srgb, var(--button-color) 85%, #ffffff);
+}
+
+.homePageButton:active {
+  background: color-mix(in srgb, var(--button-color) 85%, #000000);
+  transform: scale(0.97);
+}
+
+.homePageButton:disabled {
+  opacity: 0.5;
+  transform: none;
+}
+
+.homePageButton:disabled:hover,
+.homePageButton:disabled:active {
+  background: var(--button-color);
+}
+
+.icon {
+  display: inline-flex;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .homePageButton {
+    transition: none;
+  }
+
+  .homePageButton:active {
+    transform: none;
+  }
+}

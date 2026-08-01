@@ -1,5 +1,8 @@
 :root {
   --titlebar-height: 48px;
+
+  --color-accent: #52c793;
+  --color-focus: #2f7ff5;
 }
 
 * {

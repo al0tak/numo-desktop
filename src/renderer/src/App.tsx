@@ -1,6 +1,6 @@
-import MainRouter from './MainRouter'
+import { MainRouter } from './MainRouter'
 
-export default function App() {
+export function App() {
   return (
     <div className="app">
       <header className="titlebar" />

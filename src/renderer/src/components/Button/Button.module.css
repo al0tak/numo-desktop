@@ -1,0 +1,20 @@
+/* Wrapped in :where() so these carry zero specificity — a consumer's own class
+   overrides them without caring which stylesheet the bundler emits first. */
+:where(.button) {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  /* Native apps keep the arrow over controls — the hand is a web hyperlink
+     affordance. The hover and press tints carry the feedback instead. */
+  cursor: default;
+}
+
+/* Keyboard-only: a pointer press should not leave a ring behind. */
+.button:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
