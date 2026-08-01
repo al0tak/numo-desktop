@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Button, type ButtonProps } from '../Button'
+import { cx } from '../../lib/cx'
 import styles from './HomePageButton.module.css'
 
 export type HomePageButtonProps = ButtonProps & {
@@ -10,7 +11,7 @@ export type HomePageButtonProps = ButtonProps & {
 // The large tinted action on the home screen: icon stacked over its label.
 export function HomePageButton({ icon, children, className, ...rest }: HomePageButtonProps) {
   return (
-    <Button className={[styles.homePageButton, className].filter(Boolean).join(' ')} {...rest}>
+    <Button className={cx(styles.homePageButton, className)} {...rest}>
       {icon && (
         <span className={styles.icon} aria-hidden="true">
           {icon}

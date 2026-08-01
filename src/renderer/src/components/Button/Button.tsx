@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef } from 'react'
+import { cx } from '../../lib/cx'
 import styles from './Button.module.css'
 
 export type ButtonProps = ComponentPropsWithRef<'button'>
@@ -9,5 +10,5 @@ export type ButtonProps = ComponentPropsWithRef<'button'>
 // A plain <button> gets keyboard walking, Enter/Space activation, disabled
 // semantics and form participation from the platform.
 export function Button({ className, type = 'button', ...rest }: ButtonProps) {
-  return <button type={type} className={[styles.button, className].filter(Boolean).join(' ')} {...rest} />
+  return <button type={type} className={cx(styles.button, className)} {...rest} />
 }
