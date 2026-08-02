@@ -1,5 +1,12 @@
+import { EditorView } from '../components/EditorView'
 import { PageSidebar } from '../components/PageSidebar'
+import styles from './EditorPage.module.css'
 
 export function EditorPage() {
-  return <PageSidebar />
+  return (
+    <div className={styles.editor}>
+      <EditorView />
+      <PageSidebar className={styles.sidebar} />
+    </div>
+  )
 }
