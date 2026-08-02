@@ -1,0 +1,13 @@
+/* --panel-radius is derived from the window's own radius minus the shell
+   padding, so this panel's corners stay concentric with the window's. */
+.pageSidebar {
+  width: 280px;
+  height: 100%;
+  border-radius: var(--panel-radius);
+  /* macOS draws window corners as continuous curves, not circular arcs, so a
+     plain border-radius reads blobbier than the window it sits inside. The
+     renderer is Chromium-only, so we can just ask for the same profile. */
+  corner-shape: squircle;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}
