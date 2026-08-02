@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { ComponentPropsWithoutRef } from 'react'
+import type { ComponentPropsWithoutRef, PointerEvent } from 'react'
 import { cx } from '../../lib/cx'
 import styles from './EditorView.module.css'
 
@@ -29,8 +29,9 @@ const MAX_ZOOM_DELTA = 24
 // then `x`/`y` pixels from the viewport's top-left corner.
 type Transform = { x: number; y: number; scale: number }
 
-// The editor's canvas — an infinite plane holding the document, panned and
-// zoomed under a fixed viewport.
+// The editor's canvas — an infinite plane holding the document, panned with a
+// two-finger scroll or the space-held hand tool and zoomed under a fixed
+// viewport.
 //
 // The plane is moved with a transform rather than by scrolling a large element:
 // zoom has to stay anchored to the pointer, which is a property of the
@@ -39,6 +40,13 @@ export function EditorView({ className, ...rest }: EditorViewProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
   const [transform, setTransform] = useState<Transform>({ x: 0, y: 0, scale: 1 })
   const isPlacedByUser = useRef(false)
+
+  // The hand tool: held space arms it, a drag then pans. Two pieces of state
+  // rather than one mode, because they overlap — letting go of space mid-drag
+  // finishes the drag, it does not drop the document where it is.
+  const [isHandArmed, setIsHandArmed] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const dragOrigin = useRef({ x: 0, y: 0 })
 
   // Keep the document fitted and centred until the user pans or zooms, after
   // which where it sits is their business and resizing must not move it.
@@ -121,8 +129,80 @@ export function EditorView({ className, ...rest }: EditorViewProps) {
     return () => viewport.removeEventListener('wheel', handleWheel)
   }, [])
 
+  // Space arms the hand tool, and only while the pointer is over the canvas —
+  // the sidebar overlays this element without being inside it, so :hover is
+  // already the "is the canvas what's under the pointer" answer.
+  useEffect(() => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== 'Space' || event.repeat) return
+      if (!viewport.matches(':hover') || isTypingTarget(event.target)) return
+
+      // Space scrolls the nearest scroll container otherwise.
+      event.preventDefault()
+      setIsHandArmed(true)
+    }
+
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.code === 'Space') setIsHandArmed(false)
+    }
+
+    // A window that loses focus mid-hold never delivers the keyup, which would
+    // otherwise leave the hand armed for the next time the window comes back.
+    const handleBlur = () => setIsHandArmed(false)
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    window.addEventListener('blur', handleBlur)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('blur', handleBlur)
+    }
+  }, [])
+
+  const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (!isHandArmed || event.button !== 0) return
+
+    // Captured so a drag that runs off the canvas — over the sidebar, or out of
+    // the window — keeps panning until the button comes up.
+    event.currentTarget.setPointerCapture(event.pointerId)
+    dragOrigin.current = { x: event.clientX, y: event.clientY }
+    isPlacedByUser.current = true
+    setIsDragging(true)
+  }
+
+  const handlePointerMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return
+
+    // Stepped from the previous position rather than from event.movementX,
+    // which Chromium reports in physical pixels on a scaled display.
+    const deltaX = event.clientX - dragOrigin.current.x
+    const deltaY = event.clientY - dragOrigin.current.y
+    dragOrigin.current = { x: event.clientX, y: event.clientY }
+
+    setTransform((current) => ({ ...current, x: current.x + deltaX, y: current.y + deltaY }))
+  }
+
+  const handlePointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return
+
+    event.currentTarget.releasePointerCapture(event.pointerId)
+    setIsDragging(false)
+  }
+
   return (
-    <div ref={viewportRef} className={cx(styles.viewport, className)} {...rest}>
+    <div
+      ref={viewportRef}
+      className={cx(styles.viewport, isHandArmed && styles.handArmed, isDragging && styles.dragging, className)}
+      {...rest}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+    >
       <div
         className={styles.plane}
         style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})` }}
@@ -135,4 +215,11 @@ export function EditorView({ className, ...rest }: EditorViewProps) {
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max)
+}
+
+// Space belongs to whatever is being typed into, wherever that field lives —
+// the keydown listener is on the window, so it sees the sidebar's fields too.
+function isTypingTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof HTMLElement)) return false
+  return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
 }

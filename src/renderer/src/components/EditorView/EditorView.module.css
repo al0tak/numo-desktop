@@ -9,6 +9,18 @@
   touch-action: none;
 }
 
+/* The two halves of the hand tool: an open hand once space arms it, a closed
+   one for as long as the drag lasts. */
+.handArmed {
+  cursor: grab;
+}
+
+.dragging {
+  cursor: grabbing;
+  /* A drag across the document should move it, not sweep a selection over it. */
+  user-select: none;
+}
+
 .plane {
   position: absolute;
   top: 0;
