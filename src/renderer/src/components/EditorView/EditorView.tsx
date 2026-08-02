@@ -19,6 +19,11 @@ const ZOOM_SENSITIVITY = 0.01
 // delta gives the wheel a coarse-but-usable step without dulling the pinch.
 const MAX_ZOOM_DELTA = 24
 
+// Wheel deltas moved the plane one-for-one at first, which felt sluggish next
+// to Figma. Applies to the two-finger scroll only — the hand tool drags the
+// plane with the pointer and has to stay pinned to it.
+const PAN_SPEED = 1.5
+
 // Where the document sits in the viewport: `scale` pixels per document pixel,
 // then `x`/`y` pixels from the viewport's top-left corner.
 type Transform = { x: number; y: number; scale: number }
@@ -132,8 +137,8 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
       // straight from the event, so a diagonal swipe pans diagonally.
       setTransform((current) => ({
         ...current,
-        x: current.x - event.deltaX,
-        y: current.y - event.deltaY
+        x: current.x - event.deltaX * PAN_SPEED,
+        y: current.y - event.deltaY * PAN_SPEED
       }))
     }
 
