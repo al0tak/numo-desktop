@@ -1,4 +1,9 @@
 :root {
+  /* Auto is the absence of an override: both keywords stay in play, so the OS
+     preference decides which side of every light-dark() below is used. The
+     [data-theme] rules underneath pin it to one. */
+  color-scheme: light dark;
+
   --titlebar-height: 48px;
 
   /* macOS Tahoe clips the window to 26pt (it was 10pt through Sequoia, so this
@@ -15,6 +20,18 @@
 
   --color-accent: #52c793;
   --color-focus: #2f7ff5;
+  --color-background: light-dark(#dddddd, #1c1c1e);
+  --color-surface: light-dark(#ffffff, #2b2b2e);
+  --color-text: light-dark(#1a1a1a, #ececec);
+  --color-panel-shadow: light-dark(rgb(0 0 0 / 0.08), rgb(0 0 0 / 0.4));
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 
 * {
@@ -30,8 +47,8 @@ body,
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  background: #dddddd;
-  color: #1a1a1a;
+  background: var(--color-background);
+  color: var(--color-text);
 }
 
 /* One cell holding both children: the title bar floats over the content
