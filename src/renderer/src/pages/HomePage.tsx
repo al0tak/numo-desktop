@@ -1,6 +1,7 @@
 import { FilePlus2 } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { HomePageButton } from '../components/HomePageButton'
+import { ThemeToggleButton } from '../components/ThemeToggleButton'
 import styles from './HomePage.module.css'
 
 export function HomePage() {
@@ -11,6 +12,7 @@ export function HomePage() {
       <HomePageButton icon={<FilePlus2 size={24} strokeWidth={2} />} onClick={() => navigate('/editor')}>
         New invoice
       </HomePageButton>
+      <ThemeToggleButton />
     </div>
   )
 }

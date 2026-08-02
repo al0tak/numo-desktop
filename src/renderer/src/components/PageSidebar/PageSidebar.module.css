@@ -8,6 +8,6 @@
      plain border-radius reads blobbier than the window it sits inside. The
      renderer is Chromium-only, so we can just ask for the same profile. */
   corner-shape: squircle;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px var(--color-panel-shadow);
 }

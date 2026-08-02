@@ -1,0 +1,5 @@
+/* Neutral tint so the pair on the home page reads as one loud action and one
+   quiet one, rather than two equal accents. */
+.themeToggleButton {
+  --button-color: light-dark(#8a8a8e, #4a4a4f);
+}
