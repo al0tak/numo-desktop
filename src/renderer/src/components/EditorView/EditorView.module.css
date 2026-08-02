@@ -29,13 +29,6 @@
      what the pointer-anchored zoom math assumes. */
   transform-origin: 0 0;
   /* Only the transform changes while panning, so the plane gets its own layer
-     instead of repainting the document on every wheel event. */
+     instead of repainting the content on every wheel event. */
   will-change: transform;
-}
-
-.page {
-  /* Sized from the constants in EditorView.tsx — the fit math needs the numbers
-     anyway, so they stay there rather than being duplicated here. */
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
 }

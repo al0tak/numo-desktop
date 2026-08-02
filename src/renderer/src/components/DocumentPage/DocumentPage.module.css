@@ -1,0 +1,9 @@
+/* A4 in the units it will be printed in. CSS millimetres are a fixed ratio to
+   pixels (96dpi), so this lays out as 794 x 1123 CSS px while staying the same
+   figure a print stylesheet or the PDF export would state. */
+.documentPage {
+  width: 210mm;
+  height: 297mm;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}

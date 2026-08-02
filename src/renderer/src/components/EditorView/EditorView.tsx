@@ -5,16 +5,10 @@ import styles from './EditorView.module.css'
 
 export type EditorViewProps = ComponentPropsWithoutRef<'div'>
 
-// A4 at 96dpi. The document is measured in CSS pixels rather than mm so the
-// pan and zoom math stays in a single unit; the conversion to a physical page
-// size belongs at the PDF boundary.
-const PAGE_WIDTH = 794
-const PAGE_HEIGHT = 1123
-
 const MIN_SCALE = 0.1
 const MAX_SCALE = 8
 
-// Empty space left around the document when it is first fitted to the viewport.
+// Empty space left around the content when it is first fitted to the viewport.
 const FIT_PADDING = 48
 
 // Wheel deltas turn into a scale factor exponentially, so the same amount of
@@ -29,15 +23,18 @@ const MAX_ZOOM_DELTA = 24
 // then `x`/`y` pixels from the viewport's top-left corner.
 type Transform = { x: number; y: number; scale: number }
 
-// The editor's canvas — an infinite plane holding the document, panned with a
-// two-finger scroll or the space-held hand tool and zoomed under a fixed
-// viewport.
+// The editor's canvas — an infinite plane, panned with a two-finger scroll or
+// the space-held hand tool and zoomed under a fixed viewport. What sits on the
+// plane is the caller's business: this component knows only how to move it.
 //
 // The plane is moved with a transform rather than by scrolling a large element:
 // zoom has to stay anchored to the pointer, which is a property of the
-// transform, and there are no scrollbars to keep in step at 8x zoom.
-export function EditorView({ className, ...rest }: EditorViewProps) {
+// transform, and there are no scrollbars to keep in step at 8x zoom. Children
+// are ordinary DOM under that transform, so clicks, focus and text selection
+// land on them at any zoom without this component mapping any coordinates.
+export function EditorView({ className, children, ...rest }: EditorViewProps) {
   const viewportRef = useRef<HTMLDivElement>(null)
+  const planeRef = useRef<HTMLDivElement>(null)
   const [transform, setTransform] = useState<Transform>({ x: 0, y: 0, scale: 1 })
   const isPlacedByUser = useRef(false)
 
@@ -48,36 +45,51 @@ export function EditorView({ className, ...rest }: EditorViewProps) {
   const [isDragging, setIsDragging] = useState(false)
   const dragOrigin = useRef({ x: 0, y: 0 })
 
-  // Keep the document fitted and centred until the user pans or zooms, after
+  // Keep the content fitted and centred until the user pans or zooms, after
   // which where it sits is their business and resizing must not move it.
   //
   // Driven by a ResizeObserver rather than measured once on mount: the viewport
   // has not necessarily reached its final size by the time the mount effect
-  // runs, and a fit against a stale size leaves the document off screen.
+  // runs, and a fit against a stale size leaves the content off screen.
   useLayoutEffect(() => {
     const viewport = viewportRef.current
-    if (!viewport) return
+    const plane = planeRef.current
+    if (!viewport || !plane) return
 
-    const observer = new ResizeObserver(([entry]) => {
+    // Both elements are observed: the viewport for the window changing size,
+    // and the plane because the content it wraps is what the fit is computed
+    // from — a page arriving, or a second one appearing beside it, has to
+    // re-fit, and the plane is absolutely positioned, so its size never reaches
+    // the viewport on its own. Sizes are read back off the elements rather than
+    // from entry.contentRect, since either of the two can be what fired.
+    const observer = new ResizeObserver(() => {
       if (isPlacedByUser.current) return
 
-      const { width, height } = entry.contentRect
-      if (width === 0 || height === 0) return
+      const width = viewport.clientWidth
+      const height = viewport.clientHeight
+      // The plane shrink-wraps whatever it holds, and offset sizes are layout
+      // sizes, which the transform does not touch. So this is the content's
+      // extent in plane pixels — one page today, several side by side later,
+      // without this fit needing to know which.
+      const contentWidth = plane.offsetWidth
+      const contentHeight = plane.offsetHeight
+      if (width === 0 || height === 0 || contentWidth === 0 || contentHeight === 0) return
 
       const scale = clamp(
-        Math.min((width - FIT_PADDING * 2) / PAGE_WIDTH, (height - FIT_PADDING * 2) / PAGE_HEIGHT),
+        Math.min((width - FIT_PADDING * 2) / contentWidth, (height - FIT_PADDING * 2) / contentHeight),
         MIN_SCALE,
         MAX_SCALE
       )
 
       setTransform({
         scale,
-        x: (width - PAGE_WIDTH * scale) / 2,
-        y: (height - PAGE_HEIGHT * scale) / 2
+        x: (width - contentWidth * scale) / 2,
+        y: (height - contentHeight * scale) / 2
       })
     })
 
     observer.observe(viewport)
+    observer.observe(plane)
     return () => observer.disconnect()
   }, [])
 
@@ -204,10 +216,11 @@ export function EditorView({ className, ...rest }: EditorViewProps) {
       onPointerCancel={handlePointerUp}
     >
       <div
+        ref={planeRef}
         className={styles.plane}
         style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})` }}
       >
-        <div className={styles.page} style={{ width: PAGE_WIDTH, height: PAGE_HEIGHT }} />
+        {children}
       </div>
     </div>
   )
