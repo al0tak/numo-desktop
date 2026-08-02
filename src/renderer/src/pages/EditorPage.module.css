@@ -1,0 +1,17 @@
+/* One cell holding both children: the editor view fills the window and the
+   sidebar floats over it, so the document can be panned past the sidebar's edge
+   instead of the canvas stopping there. */
+.editor {
+  display: grid;
+  grid-template: 1fr / 1fr;
+  height: 100%;
+}
+
+.editor > * {
+  grid-area: 1 / 1;
+}
+
+.sidebar {
+  z-index: 1;
+  justify-self: start;
+}

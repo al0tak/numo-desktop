@@ -1,0 +1,34 @@
+.viewport {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Belt and braces for the preventDefault() in the wheel handler: nothing here
+     should rubber-band or arm the back-swipe if an event ever slips past it. */
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
+/* The two halves of the hand tool: an open hand once space arms it, a closed
+   one for as long as the drag lasts. */
+.handArmed {
+  cursor: grab;
+}
+
+.dragging {
+  cursor: grabbing;
+  /* A drag across the document should move it, not sweep a selection over it. */
+  user-select: none;
+}
+
+.plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* The transform is written as translate-then-scale from this origin, which is
+     what the pointer-anchored zoom math assumes. */
+  transform-origin: 0 0;
+  /* Only the transform changes while panning, so the plane gets its own layer
+     instead of repainting the content on every wheel event. */
+  will-change: transform;
+}
