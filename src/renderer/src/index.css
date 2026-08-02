@@ -1,6 +1,13 @@
 :root {
   --titlebar-height: 48px;
 
+  /* macOS clips the window to --window-radius. Panels are inset by
+     --window-padding, so their radius is what is left of the window's after
+     the inset — keep the three in step or the corners stop nesting. */
+  --window-radius: 12px;
+  --window-padding: 4px;
+  --panel-radius: calc(var(--window-radius) - var(--window-padding));
+
   --color-accent: #52c793;
   --color-focus: #2f7ff5;
 }
@@ -22,18 +29,24 @@ body {
   color: #1a1a1a;
 }
 
+/* One cell holding both children: the title bar floats over the content
+   instead of stacking above it, so a page's panels can run the full height of
+   the window and pass under the traffic lights. */
 .app {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template: 1fr / 1fr;
   height: 100%;
+  padding: var(--window-padding);
 }
 
 /* Whole strip is draggable; anything interactive inside must opt out. */
 .titlebar {
   -webkit-app-region: drag;
+  grid-area: 1 / 1;
+  z-index: 1;
   display: flex;
   align-items: center;
-  flex: 0 0 var(--titlebar-height);
+  height: var(--titlebar-height);
   /* Leave room for the traffic lights on the left. */
   padding-left: 88px;
   padding-right: 12px;
@@ -47,8 +60,9 @@ body {
   -webkit-app-region: no-drag;
 }
 
+/* No padding of its own: the shell's inset is all a full-height panel gets to
+   sit on, so any inner spacing belongs to the page. */
 .content {
-  flex: 1;
+  grid-area: 1 / 1;
   overflow: auto;
-  padding: 24px;
 }

@@ -1,0 +1,9 @@
+/* --panel-radius is derived from the window's own radius minus the shell
+   padding, so this panel's corners stay concentric with the window's. */
+.pageSidebar {
+  width: 280px;
+  height: 100%;
+  border-radius: var(--panel-radius);
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
+}
