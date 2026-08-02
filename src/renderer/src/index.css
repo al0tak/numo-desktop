@@ -1,11 +1,16 @@
 :root {
   --titlebar-height: 48px;
 
-  /* macOS clips the window to --window-radius. Panels are inset by
-     --window-padding, so their radius is what is left of the window's after
-     the inset — keep the three in step or the corners stop nesting. */
-  --window-radius: 12px;
-  --window-padding: 4px;
+  /* macOS Tahoe clips the window to 26pt (it was 10pt through Sequoia, so this
+     is version-specific). Panels are inset by --window-padding, and their
+     radius is what is left of the window's after that inset — keep the three in
+     step or the corners stop nesting.
+
+     The padding is capped by the traffic lights: they start 16pt into the
+     window, which is 14.1pt diagonally inside the panel's corner arc, so past
+     ~8pt of padding the arc starts cutting into them. */
+  --window-radius: 26px;
+  --window-padding: 8px;
   --panel-radius: calc(var(--window-radius) - var(--window-padding));
 
   --color-accent: #52c793;

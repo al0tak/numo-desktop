@@ -8,7 +8,9 @@ function createWindow(): void {
     show: false,
     // Hides the OS title bar but keeps the native traffic lights on macOS.
     titleBarStyle: 'hidden',
-    trafficLightPosition: { x: 16, y: 16 },
+    // Measured from the sidebar's edge rather than the window's, so this is the
+    // 8pt shell inset (--window-padding) plus a 12pt margin inside the panel.
+    trafficLightPosition: { x: 20, y: 20 },
     // Native window controls drawn over our own title bar on Windows/Linux.
     titleBarOverlay: { color: '#dddddd', symbolColor: '#333333', height: 48 }
   })
