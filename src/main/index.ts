@@ -1,5 +1,6 @@
 import { join } from 'node:path'
 import { app, BrowserWindow } from 'electron'
+import { registerStoreIpc } from './store'
 
 function createWindow(): void {
   const window = new BrowserWindow({
@@ -12,7 +13,8 @@ function createWindow(): void {
     // 8pt shell inset (--window-padding) plus a 12pt margin inside the panel.
     trafficLightPosition: { x: 20, y: 20 },
     // Native window controls drawn over our own title bar on Windows/Linux.
-    titleBarOverlay: { color: '#dddddd', symbolColor: '#333333', height: 48 }
+    titleBarOverlay: { color: '#dddddd', symbolColor: '#333333', height: 48 },
+    webPreferences: { preload: join(__dirname, '../preload/index.js') }
   })
 
   window.on('ready-to-show', () => window.show())
@@ -25,6 +27,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  registerStoreIpc()
   createWindow()
 
   app.on('activate', () => {
