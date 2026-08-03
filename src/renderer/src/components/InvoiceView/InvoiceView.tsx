@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
-import type { InvoiceDocument, InvoiceItem, InvoiceSelection, InvoiceTextElementId } from '../../lib/invoice'
-import { EditableText } from '../EditableText'
+import { cx } from '../../lib/cx'
+import type { InvoiceDocument, InvoiceSelection, InvoiceTextElementId } from '../../lib/invoice'
 import { InvoiceElement } from '../InvoiceElement'
 import styles from './InvoiceView.module.css'
 
@@ -8,35 +8,23 @@ export type InvoiceViewProps = {
   invoice: InvoiceDocument
   selection: InvoiceSelection
   onSelect: (selection: InvoiceSelection) => void
-  onChange: (invoice: InvoiceDocument) => void
 }
 
-// The invoice as it is printed, and as it is edited — every part of it is a
-// hitbox the editor can select, and the text inside the selected one is typed
-// into where it stands. What that selection then means is the sidebar's
-// business; this component only reports it and draws the ring.
-export function InvoiceView({ invoice, selection, onSelect, onChange }: InvoiceViewProps) {
+// The invoice as it is printed. Every part of it is a hitbox the editor can
+// select — that is all this component does with a pointer. The values it draws
+// are typed into the sidebar, which is the one place editing happens.
+export function InvoiceView({ invoice, selection, onSelect }: InvoiceViewProps) {
   // Each text field's element id is its key on the document, so one helper
-  // covers reading it, writing it back and wiring up its selection.
+  // covers drawing it and wiring up its selection.
   const text = (id: InvoiceTextElementId, className?: string): ReactNode => (
-    <InvoiceElement className={className} isSelected={selection === id} onSelect={() => onSelect(id)}>
-      <EditableText
-        value={invoice[id]}
-        isEditable={selection === id}
-        focusOnEdit
-        onChange={(value) => onChange({ ...invoice, [id]: value })}
-      />
+    <InvoiceElement
+      className={cx(styles.text, className)}
+      isSelected={selection === id}
+      onSelect={() => onSelect(id)}
+    >
+      {invoice[id]}
     </InvoiceElement>
   )
-
-  const setItem = (id: string, field: keyof Omit<InvoiceItem, 'id'>, value: string | null) => {
-    onChange({
-      ...invoice,
-      items: invoice.items.map((item) => (item.id === id ? { ...item, [field]: value } : item))
-    })
-  }
-
-  const areItemsEditable = selection === 'items'
 
   return (
     <div className={styles.invoice}>
@@ -76,7 +64,7 @@ export function InvoiceView({ invoice, selection, onSelect, onChange }: InvoiceV
         </section>
       </div>
 
-      <InvoiceElement isSelected={areItemsEditable} onSelect={() => onSelect('items')}>
+      <InvoiceElement isSelected={selection === 'items'} onSelect={() => onSelect('items')}>
         <table className={styles.items}>
           <thead>
             <tr>
@@ -88,29 +76,11 @@ export function InvoiceView({ invoice, selection, onSelect, onChange }: InvoiceV
           <tbody>
             {invoice.items.map((item) => (
               <tr key={item.id}>
-                <td className={styles.itemName}>
-                  <EditableText
-                    value={item.name}
-                    isEditable={areItemsEditable}
-                    onChange={(value) => setItem(item.id, 'name', value)}
-                  />
-                </td>
-                <td className={styles.itemAmount}>
-                  <EditableText
-                    // A line with no amount reads as blank rather than as a
-                    // quantity of nothing, and typing one in gives it one.
-                    value={item.amount ?? ''}
-                    isEditable={areItemsEditable}
-                    onChange={(value) => setItem(item.id, 'amount', value.trim() === '' ? null : value)}
-                  />
-                </td>
-                <td className={styles.itemPrice}>
-                  <EditableText
-                    value={item.price}
-                    isEditable={areItemsEditable}
-                    onChange={(value) => setItem(item.id, 'price', value)}
-                  />
-                </td>
+                <td className={styles.itemName}>{item.name}</td>
+                {/* A line with no amount stays blank rather than reading as a
+                    quantity of nothing. */}
+                <td className={styles.itemAmount}>{item.amount}</td>
+                <td className={styles.itemPrice}>{item.price}</td>
               </tr>
             ))}
           </tbody>

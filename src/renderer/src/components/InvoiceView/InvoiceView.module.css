@@ -12,6 +12,13 @@
   line-height: 1.5;
 }
 
+/* Values are stored with their newlines in them, so the page renders them. An
+   emptied one would otherwise collapse to nothing, leaving no target to click. */
+.text {
+  white-space: pre-wrap;
+  min-height: 1em;
+}
+
 .head {
   display: flex;
   justify-content: space-between;
@@ -122,11 +129,6 @@
   padding-left: 6mm;
   text-align: right;
   white-space: nowrap;
-}
-
-/* An emptied cell still has to be wide enough to click into. */
-.items td > * {
-  min-width: 8mm;
 }
 
 .bottomText {

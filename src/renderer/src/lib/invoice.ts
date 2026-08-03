@@ -60,6 +60,29 @@ export type InvoiceTextElementId =
   | 'bottomText'
   | 'footer'
 
+const TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
+  'name',
+  'header',
+  'number',
+  'date',
+  'issuer',
+  'recipient',
+  'underTableText',
+  'bottomText',
+  'footer'
+]
+
+// The ones whose value is a block of lines rather than one — an address, a
+// note. Only they are worth a multi-line control in the sidebar.
+const MULTILINE_TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
+  'header',
+  'issuer',
+  'recipient',
+  'underTableText',
+  'bottomText',
+  'footer'
+]
+
 export type InvoiceElementId = InvoiceTextElementId | 'logo' | 'items'
 
 // What the sidebar is inspecting. With no element selected it falls back to the
@@ -79,6 +102,14 @@ export const SELECTION_LABELS: Record<InvoiceSelection, string> = {
   underTableText: 'Under-table text',
   bottomText: 'Bottom text',
   footer: 'Footer'
+}
+
+export function isTextElement(selection: InvoiceSelection): selection is InvoiceTextElementId {
+  return TEXT_ELEMENT_IDS.includes(selection as InvoiceTextElementId)
+}
+
+export function isMultilineTextElement(id: InvoiceTextElementId): boolean {
+  return MULTILINE_TEXT_ELEMENT_IDS.includes(id)
 }
 
 export function createInvoiceDocument(): InvoiceDocument {

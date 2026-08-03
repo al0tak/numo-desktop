@@ -21,12 +21,7 @@ export function EditorPage() {
           selecting the document — elements stop the click before it gets here. */}
       <EditorView onClick={() => setSelection('document')}>
         <DocumentPage width={invoice.width} height={invoice.height}>
-          <InvoiceView
-            invoice={invoice}
-            selection={selection}
-            onSelect={setSelection}
-            onChange={setInvoice}
-          />
+          <InvoiceView invoice={invoice} selection={selection} onSelect={setSelection} />
         </DocumentPage>
       </EditorView>
       <PageSidebar className={styles.sidebar}>

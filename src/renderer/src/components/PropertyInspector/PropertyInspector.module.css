@@ -16,7 +16,7 @@
 .fields {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .field {
@@ -24,6 +24,27 @@
   grid-template-columns: 64px 1fr;
   gap: 8px;
   align-items: center;
+}
+
+/* Controls that need the panel's full width take the label above them rather
+   than beside them. */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* The two fields in a row are already narrow, so their labels sit above. */
+.row .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .label {
@@ -35,6 +56,10 @@
   min-width: 0;
   font: inherit;
   font-size: 12px;
+}
+
+textarea.control {
+  resize: vertical;
 }
 
 .empty {
