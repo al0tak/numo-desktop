@@ -1,0 +1,146 @@
+/* Sized in print units throughout — millimetres for the layout, points for the
+   type — so the sheet stays the same figure on screen, on paper and in a PDF.
+   The editor's zoom scales all of it together. */
+.invoice {
+  display: flex;
+  flex-direction: column;
+  gap: 8mm;
+  height: 100%;
+  padding: 16mm;
+  color: #1a1a1a;
+  font-size: 10pt;
+  line-height: 1.5;
+}
+
+/* Values are stored with their newlines in them, so the page renders them. An
+   emptied one would otherwise collapse to nothing, leaving no target to click. */
+.text {
+  white-space: pre-wrap;
+  min-height: 1em;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8mm;
+}
+
+.logo {
+  flex: none;
+}
+
+.logoImage {
+  display: block;
+  max-width: 40mm;
+  max-height: 20mm;
+}
+
+/* Nothing is drawn where an absent logo would be, so it needs a stand-in to
+   stay clickable — and somewhere to drop an image into later. */
+.logoPlaceholder {
+  display: grid;
+  place-items: center;
+  width: 30mm;
+  height: 16mm;
+  border: 1px dashed #c4c4c4;
+  border-radius: 1mm;
+  color: #9a9a9a;
+  font-size: 8pt;
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2mm;
+  text-align: right;
+}
+
+.name {
+  font-size: 20pt;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Label and value per row, the values sharing one column so the numbers and
+   dates line up under each other. */
+.meta {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0 3mm;
+  align-items: baseline;
+}
+
+.metaLabel {
+  color: #8a8a8a;
+}
+
+.parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8mm;
+}
+
+.party {
+  display: flex;
+  flex-direction: column;
+  gap: 1mm;
+}
+
+.partyLabel {
+  margin: 0;
+  color: #8a8a8a;
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.items {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.items th {
+  padding-bottom: 2mm;
+  border-bottom: 1px solid #1a1a1a;
+  color: #8a8a8a;
+  font-size: 8pt;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.items td {
+  padding: 2mm 0;
+  border-bottom: 1px solid #e4e4e4;
+  vertical-align: top;
+}
+
+.itemName {
+  width: 100%;
+  text-align: left;
+}
+
+.itemAmount,
+.itemPrice {
+  padding-left: 6mm;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.bottomText {
+  margin-top: 4mm;
+}
+
+/* Pinned to the foot of the sheet however much sits above it. */
+.footer {
+  margin-top: auto;
+  padding-top: 4mm;
+  border-top: 1px solid #e4e4e4;
+  color: #8a8a8a;
+  font-size: 8pt;
+  text-align: center;
+}
