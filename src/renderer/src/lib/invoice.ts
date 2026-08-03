@@ -112,25 +112,29 @@ export function isMultilineTextElement(id: InvoiceTextElementId): boolean {
   return MULTILINE_TEXT_ELEMENT_IDS.includes(id)
 }
 
-export function createInvoiceDocument(): InvoiceDocument {
+// A document to develop against until there is a real one to open. Every value
+// names the slot it sits in rather than pretending to be an invoice, so nothing
+// on the page reads as a decision that has been made about wording or format.
+export function createMockInvoiceDocument(): InvoiceDocument {
   return {
     format: 'a4',
     width: PAGE_FORMATS.a4.width,
     height: PAGE_FORMATS.a4.height,
     name: 'Invoice',
     logo: null,
-    header: 'Acme Studio\nHerengracht 1\n1015 BZ Amsterdam',
-    number: 'INV-2026-001',
-    date: '3 August 2026',
-    issuer: 'Acme Studio\nVAT NL0000 0000 B01',
-    recipient: 'Globex B.V.\nKeizersgracht 100\n1015 CX Amsterdam',
+    header: 'Company name\nCompany street 1\nCompany city',
+    number: 'Invoice number',
+    date: 'Invoice date',
+    issuer: 'Company name\nCompany tax number',
+    recipient: 'Client name\nClient street 1\nClient city',
     items: [
-      { id: crypto.randomUUID(), name: 'Brand identity design', amount: '12', price: '95.00' },
-      { id: crypto.randomUUID(), name: 'Website implementation', amount: '40', price: '85.00' },
-      { id: crypto.randomUUID(), name: 'Hosting setup', amount: null, price: '250.00' }
+      { id: crypto.randomUUID(), name: 'Item one', amount: '1', price: '100.00' },
+      { id: crypto.randomUUID(), name: 'Item two', amount: '2', price: '200.00' },
+      // No amount: a flat charge, the case the table has to hold.
+      { id: crypto.randomUUID(), name: 'Item three', amount: null, price: '300.00' }
     ],
-    underTableText: 'Payment due within 14 days.',
-    bottomText: 'Thank you for your business.',
-    footer: 'Acme Studio · hello@acme.example · KvK 12345678'
+    underTableText: 'Under-table text',
+    bottomText: 'Bottom text',
+    footer: 'Footer'
   }
 }

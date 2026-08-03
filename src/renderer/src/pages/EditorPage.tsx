@@ -4,7 +4,7 @@ import { EditorView } from '../components/EditorView'
 import { InvoiceView } from '../components/InvoiceView'
 import { PageSidebar } from '../components/PageSidebar'
 import { PropertyInspector } from '../components/PropertyInspector'
-import { createInvoiceDocument } from '../lib/invoice'
+import { createMockInvoiceDocument } from '../lib/invoice'
 import type { InvoiceSelection } from '../lib/invoice'
 import styles from './EditorPage.module.css'
 
@@ -12,7 +12,7 @@ import styles from './EditorPage.module.css'
 // where the canvas and the sidebar meet, and both are views of the same two
 // pieces of state.
 export function EditorPage() {
-  const [invoice, setInvoice] = useState(createInvoiceDocument)
+  const [invoice, setInvoice] = useState(createMockInvoiceDocument)
   const [selection, setSelection] = useState<InvoiceSelection>('document')
 
   return (

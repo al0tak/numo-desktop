@@ -23,6 +23,7 @@
   "scripts": {
     "postinstall": "install-electron",
     "dev": "electron-vite dev",
+    "dev:renderer": "vite --config vite.preview.config.mjs",
     "build": "electron-vite build",
     "typecheck": "tsc --noEmit"
   }
