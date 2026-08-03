@@ -1,0 +1,69 @@
+/* The sidebar runs the full height of the window and passes under the traffic
+   lights, so the first thing in it starts below the title bar. */
+.inspector {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: var(--titlebar-height) 16px 16px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Controls that need the panel's full width take the label above them rather
+   than beside them. */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* The two fields in a row are already narrow, so their labels sit above. */
+.row .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  font-size: 12px;
+}
+
+.control {
+  min-width: 0;
+  font: inherit;
+  font-size: 12px;
+}
+
+textarea.control {
+  resize: vertical;
+}
+
+.empty {
+  margin: 0;
+  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+  font-size: 12px;
+}

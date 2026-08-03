@@ -1,0 +1,17 @@
+/* Transparent rather than absent, so the ring appearing on hover does not
+   change the box and shift the text under it. The offset is in millimetres like
+   the rest of the page, so it holds its distance from the content at any zoom. */
+.invoiceElement {
+  border-radius: 1mm;
+  outline: 1px solid transparent;
+  outline-offset: 1mm;
+}
+
+.invoiceElement:hover {
+  outline-color: color-mix(in srgb, var(--color-focus) 40%, transparent);
+}
+
+.selected,
+.selected:hover {
+  outline: 2px solid var(--color-focus);
+}
