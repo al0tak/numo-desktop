@@ -50,15 +50,7 @@ export type InvoiceDocument = {
 // The fields that are a single run of text on the page. Their ids are their
 // keys in InvoiceDocument, so selecting one is enough to read and write it.
 export type InvoiceTextElementId =
-  | 'name'
-  | 'header'
-  | 'number'
-  | 'date'
-  | 'issuer'
-  | 'recipient'
-  | 'underTableText'
-  | 'bottomText'
-  | 'footer'
+  'name' | 'header' | 'number' | 'date' | 'issuer' | 'recipient' | 'underTableText' | 'bottomText' | 'footer'
 
 const TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
   'name',
