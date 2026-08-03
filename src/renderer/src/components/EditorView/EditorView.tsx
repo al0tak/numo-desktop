@@ -213,7 +213,12 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
   return (
     <div
       ref={viewportRef}
-      className={cx(styles.viewport, isHandArmed && styles.handArmed, isDragging && styles.dragging, className)}
+      className={cx(
+        styles.viewport,
+        isHandArmed && styles.handArmed,
+        isDragging && styles.dragging,
+        className
+      )}
       {...rest}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}

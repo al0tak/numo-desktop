@@ -10,6 +10,9 @@ export default defineConfig({
   },
   preload: {},
   renderer: {
-    plugins: [react()]
+    // React Compiler memoizes components at build time, so the renderer should
+    // not need useMemo/useCallback by hand. It targets React 19 by default,
+    // which matches the installed react/react-dom.
+    plugins: [react({ babel: { plugins: ['babel-plugin-react-compiler'] } })]
   }
 })
