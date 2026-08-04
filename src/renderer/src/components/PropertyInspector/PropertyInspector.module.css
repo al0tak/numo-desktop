@@ -1,10 +1,8 @@
-/* The sidebar runs the full height of the window and passes under the traffic
-   lights, so the first thing in it starts below the title bar. */
 .inspector {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: var(--titlebar-height) 16px 16px;
+  padding: 16px;
 }
 
 .heading {

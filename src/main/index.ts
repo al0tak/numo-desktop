@@ -3,17 +3,12 @@ import { app, BrowserWindow } from 'electron'
 import { registerStoreIpc } from './store'
 
 function createWindow(): void {
+  // Deliberately a stock window: the OS draws the title bar, the frame, the
+  // corners and the window controls, and the renderer only fills what is left.
   const window = new BrowserWindow({
     width: 1024,
     height: 768,
     show: false,
-    // Hides the OS title bar but keeps the native traffic lights on macOS.
-    titleBarStyle: 'hidden',
-    // Measured from the sidebar's edge rather than the window's, so this is the
-    // 8pt shell inset (--window-padding) plus a 12pt margin inside the panel.
-    trafficLightPosition: { x: 20, y: 20 },
-    // Native window controls drawn over our own title bar on Windows/Linux.
-    titleBarOverlay: { color: '#dddddd', symbolColor: '#333333', height: 48 },
     webPreferences: { preload: join(__dirname, '../preload/index.js') }
   })
 
