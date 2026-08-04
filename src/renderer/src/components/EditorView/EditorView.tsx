@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { ComponentPropsWithoutRef, PointerEvent } from 'react'
+import type { ComponentPropsWithoutRef, MouseEvent, PointerEvent } from 'react'
 import { cx } from '../../lib/cx'
 import styles from './EditorView.module.css'
 
@@ -49,6 +49,12 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
   const [isHandArmed, setIsHandArmed] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
   const dragOrigin = useRef({ x: 0, y: 0 })
+
+  // A pan is a drag, not a click, but the browser still fires a click when the
+  // button comes up — and to whatever is on the plane that click looks like an
+  // ordinary one, which selects it, or clears the selection when it lands on
+  // the canvas. Marked here on the way down and swallowed on the way back.
+  const isPanGesture = useRef(false)
 
   // Keep the content fitted and centred until the user pans or zooms, after
   // which where it sits is their business and resizing must not move it.
@@ -181,6 +187,11 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
   }, [])
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    // Set on every press, so a press that is not a pan clears the mark left by
+    // one that was — a gesture whose click never arrives (the button coming up
+    // outside the window) must not eat the next real click.
+    isPanGesture.current = isHandArmed && event.button === 0
+
     if (!isHandArmed || event.button !== 0) return
 
     // Captured so a drag that runs off the canvas — over the sidebar, or out of
@@ -210,6 +221,16 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
     setIsDragging(false)
   }
 
+  // Caught on the way down, before the click reaches what is under the pointer:
+  // the plane's own children decide what a click means to them, and by the time
+  // it bubbled back up here the selection would already have changed.
+  const handleClickCapture = (event: MouseEvent<HTMLDivElement>) => {
+    if (!isPanGesture.current) return
+
+    isPanGesture.current = false
+    event.stopPropagation()
+  }
+
   return (
     <div
       ref={viewportRef}
@@ -220,6 +241,7 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
         className
       )}
       {...rest}
+      onClickCapture={handleClickCapture}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
