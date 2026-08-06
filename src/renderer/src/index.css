@@ -4,6 +4,11 @@
      [data-theme] rules underneath pin it to one. */
   color-scheme: light dark;
 
+  /* The strip at the top of the client area that drags the window. Kept in step
+     with the height passed to titleBarOverlay in the main process, and with the
+     trafficLightPosition that centres the macOS controls inside it. */
+  --titlebar-height: 48px;
+
   --color-accent: #52c793;
   --color-focus: #2f7ff5;
   --color-background: light-dark(#dddddd, #1c1c1e);
@@ -37,9 +42,34 @@ body {
   color: var(--color-text);
 }
 
-/* The window's title bar, frame and corners are the OS's, so the shell is just
-   the client area: no inset, no chrome of its own. */
+/* One cell holding both children: the drag strip floats over the content
+   instead of stacking above it, so a page's panels still run the full height of
+   the client area and pass under the window controls. */
 .app {
+  display: grid;
+  grid-template: 1fr / 1fr;
   height: 100%;
+}
+
+/* With the OS title bar hidden this strip is the only thing left to drag the
+   window by, so it spans the full width. Anything interactive inside it must
+   opt out. */
+.titlebar {
+  -webkit-app-region: drag;
+  grid-area: 1 / 1;
+  z-index: 1;
+  height: var(--titlebar-height);
+  user-select: none;
+}
+
+.titlebar button,
+.titlebar input,
+.titlebar a,
+.no-drag {
+  -webkit-app-region: no-drag;
+}
+
+.content {
+  grid-area: 1 / 1;
   overflow: auto;
 }

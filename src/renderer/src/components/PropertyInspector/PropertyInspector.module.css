@@ -1,8 +1,10 @@
+/* The sidebar runs the full height of the client area and passes under the
+   window controls, so the first thing in it starts below the drag strip. */
 .inspector {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px;
+  padding: var(--titlebar-height) 16px 16px;
 }
 
 .heading {
