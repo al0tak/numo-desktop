@@ -2,8 +2,11 @@ import { MainRouter } from './MainRouter'
 
 export function App() {
   return (
-    <main className="app">
-      <MainRouter />
-    </main>
+    <div className="app">
+      <header className="titlebar" />
+      <main className="content">
+        <MainRouter />
+      </main>
+    </div>
   )
 }
