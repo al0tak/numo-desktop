@@ -1,0 +1,40 @@
+/* Wrapped in :where() so these carry zero specificity — a consumer's own class
+   overrides them without caring which stylesheet the bundler emits first. */
+:where(.textarea) {
+  min-width: 0;
+  /* Grows with its content instead of holding a fixed row count. The bounds are
+     in lines, so they hold whatever the font ends up being. */
+  field-sizing: content;
+  min-height: calc(2lh + var(--control-padding) * 2);
+  max-height: calc(10lh + var(--control-padding) * 2);
+  padding: calc(var(--control-padding) - 2px) var(--control-padding);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--control-radius);
+  background: var(--color-control-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--control-font-size);
+  line-height: 1.45;
+  /* The handle would sit over the rounded corner, and the box already sizes
+     itself to the text. */
+  resize: none;
+  transition: var(--control-transition);
+}
+
+.textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.textarea:hover:not(:focus, :disabled) {
+  border-color: var(--color-control-border-hover);
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: var(--control-focus-ring);
+}
+
+.textarea:disabled {
+  opacity: 0.5;
+}

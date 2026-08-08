@@ -1,35 +1,32 @@
 .inspector {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
   padding: 16px;
 }
 
 .heading {
   margin: 0;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .fields {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
+/* Every control takes the panel's full width, so its name sits above it rather
+   than beside — one column of fields, all starting on the same edge. */
 .field {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 8px;
-  align-items: center;
-}
-
-/* Controls that need the panel's full width take the label above them rather
-   than beside them. */
-.section {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
+  /* A field is a grid item in .row, and an input's default size would otherwise
+     hold its column open wider than the panel. */
+  min-width: 0;
 }
 
 .row {
@@ -38,30 +35,23 @@
   gap: 8px;
 }
 
-/* The two fields in a row are already narrow, so their labels sit above. */
-.row .field {
+.label {
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+/* A labelled group of controls sits further from its neighbours than the
+   controls inside it do from each other. */
+.group {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-}
-
-.label {
-  color: color-mix(in srgb, var(--color-text) 60%, transparent);
-  font-size: 12px;
-}
-
-.control {
-  min-width: 0;
-  font: inherit;
-  font-size: 12px;
-}
-
-textarea.control {
-  resize: vertical;
+  gap: 8px;
 }
 
 .empty {
   margin: 0;
-  color: color-mix(in srgb, var(--color-text) 45%, transparent);
+  color: var(--color-text-muted);
   font-size: 12px;
 }

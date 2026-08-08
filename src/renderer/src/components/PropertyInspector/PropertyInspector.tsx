@@ -1,4 +1,7 @@
 import type { ReactNode } from 'react'
+import { Input } from '../Input'
+import { Select } from '../Select'
+import { Textarea } from '../Textarea'
 import type {
   InvoiceDocument,
   InvoiceItem,
@@ -59,10 +62,8 @@ export function PropertyInspector({ invoice, selection, onChange }: PropertyInsp
 
       {selection === 'document' && (
         <div className={styles.fields}>
-          <label className={styles.field}>
-            <span className={styles.label}>Format</span>
-            <select
-              className={styles.control}
+          <Field label="Format">
+            <Select
               value={invoice.format}
               onChange={(event) => setFormat(event.currentTarget.value as PageFormat)}
             >
@@ -72,70 +73,59 @@ export function PropertyInspector({ invoice, selection, onChange }: PropertyInsp
                 </option>
               ))}
               <option value="custom">Custom</option>
-            </select>
-          </label>
+            </Select>
+          </Field>
 
-          <label className={styles.field}>
-            <span className={styles.label}>Width</span>
-            <input
-              className={styles.control}
-              type="number"
-              min={1}
-              value={invoice.width}
-              onChange={(event) => setSize('width', event.currentTarget.valueAsNumber)}
-            />
-          </label>
+          {/* The two sides of one size, side by side. */}
+          <div className={styles.row}>
+            <Field label="Width">
+              <Input
+                type="number"
+                min={1}
+                value={invoice.width}
+                onChange={(event) => setSize('width', event.currentTarget.valueAsNumber)}
+              />
+            </Field>
 
-          <label className={styles.field}>
-            <span className={styles.label}>Height</span>
-            <input
-              className={styles.control}
-              type="number"
-              min={1}
-              value={invoice.height}
-              onChange={(event) => setSize('height', event.currentTarget.valueAsNumber)}
-            />
-          </label>
+            <Field label="Height">
+              <Input
+                type="number"
+                min={1}
+                value={invoice.height}
+                onChange={(event) => setSize('height', event.currentTarget.valueAsNumber)}
+              />
+            </Field>
+          </div>
         </div>
       )}
 
       {isTextElement(selection) && (
-        <label className={styles.section}>
-          <span className={styles.label}>Value</span>
+        <Field label="Value">
           {isMultilineTextElement(selection) ? (
-            <textarea
-              className={styles.control}
-              rows={4}
+            <Textarea
               value={invoice[selection]}
               onChange={(event) => setText(selection, event.currentTarget.value)}
             />
           ) : (
-            <input
-              className={styles.control}
-              type="text"
+            <Input
               value={invoice[selection]}
               onChange={(event) => setText(selection, event.currentTarget.value)}
             />
           )}
-        </label>
+        </Field>
       )}
 
       {selection === 'items' && (
         <div className={styles.fields}>
           {invoice.items.map((item, index) => (
-            <Section key={item.id} label={`Item ${index + 1}`}>
-              <input
-                className={styles.control}
-                type="text"
+            <Group key={item.id} label={`Item ${index + 1}`}>
+              <Input
                 value={item.name}
                 onChange={(event) => setItem(item.id, 'name', event.currentTarget.value)}
               />
               <div className={styles.row}>
-                <label className={styles.field}>
-                  <span className={styles.label}>Qty</span>
-                  <input
-                    className={styles.control}
-                    type="text"
+                <Field label="Qty">
+                  <Input
                     // A line left without an amount is a flat charge rather than
                     // a quantity of nothing, and an emptied field says so.
                     value={item.amount ?? ''}
@@ -144,18 +134,15 @@ export function PropertyInspector({ invoice, selection, onChange }: PropertyInsp
                       setItem(item.id, 'amount', value.trim() === '' ? null : value)
                     }}
                   />
-                </label>
-                <label className={styles.field}>
-                  <span className={styles.label}>Price</span>
-                  <input
-                    className={styles.control}
-                    type="text"
+                </Field>
+                <Field label="Price">
+                  <Input
                     value={item.price}
                     onChange={(event) => setItem(item.id, 'price', event.currentTarget.value)}
                   />
-                </label>
+                </Field>
               </div>
-            </Section>
+            </Group>
           ))}
         </div>
       )}
@@ -165,12 +152,23 @@ export function PropertyInspector({ invoice, selection, onChange }: PropertyInsp
   )
 }
 
-// A labelled block of controls. A div rather than a label, because more than
-// one control sits under the name — the labels inside it are the ones that
-// belong to a field.
-function Section({ label, children }: { label: string; children: ReactNode }) {
+// One control under its name. A label, so the name is the control's — clicking
+// it focuses the field, and a screen reader reads the two together.
+function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className={styles.section}>
+    <label className={styles.field}>
+      <span className={styles.label}>{label}</span>
+      {children}
+    </label>
+  )
+}
+
+// A named block of controls. A div rather than a label, because more than one
+// control sits under the name — the labels inside it are the ones that belong
+// to a field.
+function Group({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className={styles.group}>
       <span className={styles.label}>{label}</span>
       {children}
     </div>

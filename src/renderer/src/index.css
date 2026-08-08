@@ -9,7 +9,23 @@
   --color-background: light-dark(#dddddd, #1c1c1e);
   --color-surface: light-dark(#ffffff, #2b2b2e);
   --color-text: light-dark(#1a1a1a, #ececec);
+  --color-text-muted: color-mix(in srgb, var(--color-text) 55%, transparent);
   --color-border: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.1));
+
+  /* One box shared by every form control, so an input, a select and a textarea
+     standing next to each other line up and read as the same kind of thing.
+     Each control's stylesheet spends these rather than picking its own. */
+  --control-height: 30px;
+  --control-radius: 7px;
+  --control-padding: 9px;
+  --control-font-size: 13px;
+  --control-transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+  --color-control-surface: light-dark(#ffffff, rgb(255 255 255 / 0.045));
+  --color-control-border: light-dark(rgb(0 0 0 / 0.14), rgb(255 255 255 / 0.12));
+  --color-control-border-hover: light-dark(rgb(0 0 0 / 0.26), rgb(255 255 255 / 0.22));
+  /* Sits just outside the border, the way a focus ring does — an outline would
+     have to clear the border to be seen, which reads as a halo instead. */
+  --control-focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-focus) 28%, transparent);
 }
 
 :root[data-theme='light'] {
