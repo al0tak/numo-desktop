@@ -86,17 +86,9 @@ export function PropertyInspector({ invoice, selection, onChange }: PropertyInsp
     const ref = selection === id ? holdSelectedField : undefined
 
     return isMultilineTextElement(id) ? (
-      <Textarea
-        ref={ref}
-        value={invoice[id]}
-        onChange={(event) => setText(id, event.currentTarget.value)}
-      />
+      <Textarea ref={ref} value={invoice[id]} onChange={(event) => setText(id, event.currentTarget.value)} />
     ) : (
-      <Input
-        ref={ref}
-        value={invoice[id]}
-        onChange={(event) => setText(id, event.currentTarget.value)}
-      />
+      <Input ref={ref} value={invoice[id]} onChange={(event) => setText(id, event.currentTarget.value)} />
     )
   }
 
