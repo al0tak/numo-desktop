@@ -34,7 +34,7 @@ export type InvoiceDocument = {
   // What the document calls itself — invoice, factura, bill. Not a file name.
   name: string
   logo: string | null
-  header: string
+  headerText: string
   number: string
   date: string
   // The two parties, in the terms an invoice states them: the issuer raises it,
@@ -50,11 +50,19 @@ export type InvoiceDocument = {
 // The fields that are a single run of text on the page. Their ids are their
 // keys in InvoiceDocument, so selecting one is enough to read and write it.
 export type InvoiceTextElementId =
-  'name' | 'header' | 'number' | 'date' | 'issuer' | 'recipient' | 'underTableText' | 'bottomText' | 'footer'
+  | 'name'
+  | 'headerText'
+  | 'number'
+  | 'date'
+  | 'issuer'
+  | 'recipient'
+  | 'underTableText'
+  | 'bottomText'
+  | 'footer'
 
 const TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
   'name',
-  'header',
+  'headerText',
   'number',
   'date',
   'issuer',
@@ -67,7 +75,7 @@ const TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
 // The ones whose value is a block of lines rather than one — an address, a
 // note. Only they are worth a multi-line control in the sidebar.
 const MULTILINE_TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
-  'header',
+  'headerText',
   'issuer',
   'recipient',
   'underTableText',
@@ -77,15 +85,39 @@ const MULTILINE_TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
 
 export type InvoiceElementId = InvoiceTextElementId | 'logo' | 'items'
 
-// What the sidebar is inspecting. With no element selected it falls back to the
-// document itself, which is where the editor starts.
-export type InvoiceSelection = 'document' | InvoiceElementId
+// Parts of the page that are read as one block are edited as one: clicking any
+// of them selects the block, and the sidebar inspects the whole of it at once,
+// rather than making the logo, the title and the number three separate trips.
+export type InvoiceGroupId = 'header'
+
+// A group's parts, in the order the sidebar offers them.
+export const GROUP_ELEMENT_IDS: Record<InvoiceGroupId, InvoiceElementId[]> = {
+  header: ['logo', 'name', 'number', 'date', 'headerText']
+}
+
+// What is picked on the page. It is a part rather than the group it belongs to,
+// because which part was clicked still matters — the sidebar puts the cursor in
+// that part's field. With nothing picked it falls back to the document itself,
+// which is where the editor starts.
+export type InvoiceSelection = 'document' | InvoiceGroupId | InvoiceElementId
+
+// What the sidebar inspects for a selection, and what the page draws a ring
+// around: the group a part belongs to, or the selection itself when it is in
+// none. Every part of a group answers with the group, so this is also how the
+// page asks whether an element it is about to draw is a part of one.
+export function inspectedSelection(selection: InvoiceSelection): InvoiceSelection {
+  const groups = Object.keys(GROUP_ELEMENT_IDS) as InvoiceGroupId[]
+  const group = groups.find((id) => GROUP_ELEMENT_IDS[id].includes(selection as InvoiceElementId))
+
+  return group ?? selection
+}
 
 export const SELECTION_LABELS: Record<InvoiceSelection, string> = {
   document: 'Document',
-  name: 'Document name',
+  header: 'Invoice header',
+  name: 'Title',
   logo: 'Logo',
-  header: 'Header',
+  headerText: 'Header text',
   number: 'Invoice number',
   date: 'Invoice date',
   issuer: 'Issuer',
@@ -114,7 +146,7 @@ export function createMockInvoiceDocument(): InvoiceDocument {
     height: PAGE_FORMATS.a4.height,
     name: 'Invoice',
     logo: null,
-    header: 'Company name\nCompany street 1\nCompany city',
+    headerText: 'Company name\nCompany street 1\nCompany city',
     number: 'Invoice number',
     date: 'Invoice date',
     issuer: 'Company name\nCompany tax number',
