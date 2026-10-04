@@ -105,8 +105,10 @@
   pointer-events: none;
 }
 
-/* Shown while the tab is pointed at or has keyboard focus, the way a native
-   tab bar does, so a row of tabs reads as a row of titles. */
+/* Always shown on the tab on screen. The others show it only while pointed at
+   or holding keyboard focus, the way a native tab bar does, so a row of
+   background tabs reads as a row of titles. */
+.active .close,
 .tab:hover .close,
 .tab:focus-within .close {
   display: inline-flex;
