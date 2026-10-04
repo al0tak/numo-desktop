@@ -1,8 +1,9 @@
 import { randomUUID } from 'node:crypto'
-import { readFile, rename, rm, writeFile } from 'node:fs/promises'
+import { readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import { BrowserWindow, dialog, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import type { CloseChoice, OpenedFile } from '../shared/files'
+import { store } from './store'
 
 const FILE_FILTERS = [{ name: 'Numo invoice', extensions: ['numo'] }]
 
@@ -29,13 +30,17 @@ export function registerFileIpc(): void {
 
   ipcMain.handle('file:save-as', async (event, suggestedName: string, contents: string) => {
     const window = BrowserWindow.fromWebContents(event.sender)
-    const options = { defaultPath: `${suggestedName}.numo`, filters: FILE_FILTERS }
+    const defaultPath = join(await saveFolder(), `${suggestedName}.numo`)
+    const options = { defaultPath, filters: FILE_FILTERS }
     const result = window
       ? await dialog.showSaveDialog(window, options)
       : await dialog.showSaveDialog(options)
     if (result.canceled || !result.filePath) return null
 
     await writeAtomically(result.filePath, contents)
+    // Remembered only once the file is written, so a save that failed does not
+    // send the next one back to a folder that may be the reason it failed.
+    store.set('saveFolder', dirname(result.filePath))
     return result.filePath
   })
 
@@ -64,6 +69,25 @@ export function registerFileIpc(): void {
     if (window) await dialog.showMessageBox(window, options)
     else await dialog.showMessageBox(options)
   })
+}
+
+// Where Save As starts: the folder the last one was saved to, or Documents
+// for a first save — and again whenever the remembered folder has since been
+// moved, deleted or unmounted, rather than starting the dialog somewhere that
+// is not there.
+async function saveFolder(): Promise<string> {
+  const remembered = store.get('saveFolder')
+  if (remembered && (await isDirectory(remembered))) return remembered
+
+  return app.getPath('documents')
+}
+
+async function isDirectory(path: string): Promise<boolean> {
+  try {
+    return (await stat(path)).isDirectory()
+  } catch {
+    return false
+  }
 }
 
 // Written beside the target and renamed over it, so a crash or a full disk
