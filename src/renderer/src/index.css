@@ -8,6 +8,10 @@
      with the height passed to titleBarOverlay in the main process, and with the
      trafficLightPosition that centres the macOS controls inside it. */
   --titlebar-height: 38px;
+  /* Where the macOS window controls end: the 12pt inset from
+     trafficLightPosition, then three 14pt buttons 8pt apart. Anything at the
+     left end of the strip starts after this. */
+  --traffic-lights-end: 70px;
 
   --color-accent: #52c793;
   --color-focus: #2f7ff5;
