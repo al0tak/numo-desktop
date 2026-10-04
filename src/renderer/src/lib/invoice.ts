@@ -28,6 +28,9 @@ export const PAGE_FORMATS = {
 export type PageFormat = keyof typeof PAGE_FORMATS | 'custom'
 
 export type InvoiceDocument = {
+  // What the user calls the document — the name it goes by in the editor, never
+  // printed on the page. Not to be confused with `name` below.
+  title: string
   format: PageFormat
   width: number
   height: number
@@ -141,6 +144,7 @@ export function isMultilineTextElement(id: InvoiceTextElementId): boolean {
 // on the page reads as a decision that has been made about wording or format.
 export function createMockInvoiceDocument(): InvoiceDocument {
   return {
+    title: 'Untitled document',
     format: 'a4',
     width: PAGE_FORMATS.a4.width,
     height: PAGE_FORMATS.a4.height,

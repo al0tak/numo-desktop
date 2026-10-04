@@ -7,11 +7,13 @@
   /* The strip at the top of the client area that drags the window. Kept in step
      with the height passed to titleBarOverlay in the main process, and with the
      trafficLightPosition that centres the macOS controls inside it. */
-  --titlebar-height: 48px;
+  --titlebar-height: 38px;
 
   --color-accent: #52c793;
   --color-focus: #2f7ff5;
-  --color-background: light-dark(#dddddd, #1c1c1e);
+  --color-background: light-dark(#ffffff, #1c1c1e);
+  /* Behind the editor's pages, a step off the page colour so their edges show. */
+  --color-canvas: light-dark(#dddddd, #1c1c1e);
   --color-surface: light-dark(#ffffff, #2b2b2e);
   --color-text: light-dark(#1a1a1a, #ececec);
   --color-text-muted: color-mix(in srgb, var(--color-text) 55%, transparent);

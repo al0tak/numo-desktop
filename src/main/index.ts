@@ -12,12 +12,14 @@ function createWindow(): void {
     show: false,
     titleBarStyle: 'hidden',
     // Vertically centred in the --titlebar-height strip the renderer keeps
-    // clear, and inset from the left by the same distance as from the top.
-    trafficLightPosition: { x: 17, y: 16 },
+    // clear, and inset from the left by the same distance as from the top —
+    // 12pt both ways, measured on screen. The y is smaller because macOS draws
+    // the buttons a few points lower than the position asked for.
+    trafficLightPosition: { x: 12, y: 9 },
     // Windows and Linux have no traffic lights, so Electron draws the native
     // controls over the strip instead. A transparent background lets whichever
     // theme the renderer is in show through, which a fixed colour would not.
-    titleBarOverlay: { color: 'rgba(0, 0, 0, 0)', symbolColor: '#808080', height: 48 },
+    titleBarOverlay: { color: 'rgba(0, 0, 0, 0)', symbolColor: '#808080', height: 38 },
     webPreferences: { preload: join(__dirname, '../preload/index.js') }
   })
 

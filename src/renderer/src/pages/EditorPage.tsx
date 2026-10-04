@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { DocumentPage } from '../components/DocumentPage'
+import { EditorTopBar } from '../components/EditorTopBar'
 import { EditorView } from '../components/EditorView'
 import { InvoiceView } from '../components/InvoiceView'
 import { PageSidebar } from '../components/PageSidebar'
@@ -19,7 +20,7 @@ export function EditorPage() {
     <div className={styles.editor}>
       {/* Clicking past the invoice deselects, which is the same thing as
           selecting the document — elements stop the click before it gets here. */}
-      <EditorView onClick={() => setSelection('document')}>
+      <EditorView className={styles.canvas} onClick={() => setSelection('document')}>
         <DocumentPage width={invoice.width} height={invoice.height}>
           <InvoiceView invoice={invoice} selection={selection} onSelect={setSelection} />
         </DocumentPage>
@@ -27,6 +28,11 @@ export function EditorPage() {
       <PageSidebar className={styles.sidebar}>
         <PropertyInspector invoice={invoice} selection={selection} onChange={setInvoice} />
       </PageSidebar>
+      <EditorTopBar
+        className={styles.topBar}
+        title={invoice.title}
+        onTitleChange={(title) => setInvoice({ ...invoice, title })}
+      />
     </div>
   )
 }

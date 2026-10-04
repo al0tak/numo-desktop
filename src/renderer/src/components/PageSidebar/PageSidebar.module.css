@@ -1,4 +1,4 @@
-/* Flush against the window on three sides — no inset, no radius, no shadow.
+/* Flush against the window — no inset, no radius, no shadow.
    A hairline on the open edge is all that separates it from the page. */
 .pageSidebar {
   width: 280px;

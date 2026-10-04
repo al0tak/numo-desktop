@@ -3,6 +3,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
+  background: var(--color-canvas);
   /* Belt and braces for the preventDefault() in the wheel handler: nothing here
      should rubber-band or arm the back-swipe if an event ever slips past it. */
   overscroll-behavior: none;
