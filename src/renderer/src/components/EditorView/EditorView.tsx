@@ -153,7 +153,7 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
   }, [])
 
   // Space arms the hand tool, and only while the pointer is over the canvas —
-  // the sidebar overlays this element without being inside it, so :hover is
+  // the sidebar sits beside this element rather than inside it, so :hover is
   // already the "is the canvas what's under the pointer" answer.
   useEffect(() => {
     const viewport = viewportRef.current

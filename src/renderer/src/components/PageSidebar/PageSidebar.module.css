@@ -1,8 +1,7 @@
-/* Flush against the window — no inset, no radius, no shadow.
-   A hairline on the open edge is all that separates it from the page. */
+/* Flush against the window — no inset, no radius, no shadow, and no line on
+   its open edge either: the canvas beside it has an edge of its own. */
 .pageSidebar {
   width: 280px;
   height: 100%;
-  border-right: 1px solid var(--color-border);
   background: var(--color-surface);
 }

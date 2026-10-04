@@ -13,7 +13,8 @@
   align-items: center;
   flex: none;
   width: 180px;
-  height: 28px;
+  /* Set by the tab bar, so the tabs keep a gap to the editor under them. */
+  height: var(--tab-height);
   padding: 0 2px;
   border-radius: var(--control-radius);
   background: var(--tab-background);
@@ -40,7 +41,7 @@
   padding: 0 6px;
   overflow: hidden;
   color: inherit;
-  line-height: 28px;
+  line-height: var(--tab-height);
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -64,8 +65,10 @@
    instead of cutting a letter in half. */
 .close {
   position: absolute;
-  top: 5px;
+  /* Centred whatever height the tab bar gives the tab. */
+  inset-block: 0;
   right: 5px;
+  margin-block: auto;
   display: none;
   align-items: center;
   justify-content: center;

@@ -8,6 +8,10 @@
      with the height passed to titleBarOverlay in the main process, and with the
      trafficLightPosition that centres the macOS controls inside it. */
   --titlebar-height: 38px;
+  /* The one gap between neighbouring pieces of the frame: between the items of
+     the top bar, and between the bar's tabs and the editor under them. Spend it
+     wherever two such pieces meet rather than picking a new distance. */
+  --gap: 6px;
   /* Where the macOS window controls end, measured on screen: the 12pt inset
      from trafficLightPosition plus the three buttons and the space between
      them. Anything at the left end of the strip starts after this. */

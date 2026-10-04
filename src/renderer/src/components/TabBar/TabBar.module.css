@@ -1,18 +1,20 @@
 /* The window's drag strip as well as its tab bar: with the OS title bar hidden
    this is what the window is dragged by, so the bar drags and only the tabs and
    the home button opt out. The macOS window controls sit at its left end, so
-   the home button starts clear of them — by the same gap that separates it
-   from the first tab, so the lights read as one more item in the row. */
+   the home button starts clear of them by the same --gap that separates every
+   item in the row, so the lights read as one more of them.
+
+   Items are a gap short of the bar at the top and at the bottom, which makes
+   the space between the tabs and the editor under them that same gap too. */
 .tabBar {
-  --tab-bar-gap: 8px;
+  --tab-height: calc(var(--titlebar-height) - 2 * var(--gap));
 
   -webkit-app-region: drag;
   display: flex;
   align-items: center;
-  gap: var(--tab-bar-gap);
+  gap: var(--gap);
   height: var(--titlebar-height);
-  padding: 0 10px 0 calc(var(--traffic-lights-end) + var(--tab-bar-gap));
-  border-bottom: 1px solid var(--color-border);
+  padding: 0 10px 0 calc(var(--traffic-lights-end) + var(--gap));
   background: var(--color-surface);
   user-select: none;
 }
@@ -23,8 +25,10 @@
   flex: none;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  /* Wider than it is tall, so it reads as a tab of its own at the head of the
+     row rather than as a square button beside it. */
+  width: calc(var(--tab-height) * 1.4);
+  height: var(--tab-height);
   border-radius: var(--control-radius);
   color: var(--color-text-muted);
   cursor: default;
@@ -52,6 +56,6 @@
 .tabs {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--gap);
   min-width: 0;
 }

@@ -1,18 +1,26 @@
-/* The canvas fills the window and the sidebar floats over it, so the document
-   can be panned past its edge instead of the canvas stopping there. The app's
-   tab bar floats over the first row the same way; the sidebar takes the left
-   column under it. */
+/* The app's tab bar floats over the first row and the sidebar takes the left
+   column under it. The canvas takes only what is left, so the document is
+   fitted to the part of the window it can actually be seen in, and its corner
+   is a corner of its own rather than wherever the panels cover it.
+
+   The editor wears the panels' surface, so what shows behind the canvas's
+   rounded corner is the same white the bar and the sidebar are made of — the
+   two read as one frame the canvas sits inside. */
 .editor {
   display: grid;
   grid-template: var(--titlebar-height) 1fr / auto 1fr;
   height: 100%;
+  background: var(--color-surface);
 }
 
 .canvas {
-  grid-area: 1 / 1 / -1 / -1;
+  grid-area: 2 / 2;
+  min-width: 0;
+  min-height: 0;
+  /* The tabs' radius, so the frame's one corner matches the shapes in it. */
+  border-top-left-radius: var(--control-radius);
 }
 
 .sidebar {
   grid-area: 2 / 1;
-  z-index: 1;
 }

@@ -2,10 +2,12 @@
    uses, so moving between the document's pages and an element's never shifts
    anything. */
 .page {
+  --pane-padding: 16px;
+
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 16px;
+  padding: var(--pane-padding);
 }
 
 .heading {
@@ -24,9 +26,10 @@
 .links {
   display: flex;
   flex-direction: column;
-  /* Pulled out to the panel's padding, so a row's hover reaches past the
-     column of text it holds while the text stays on the column's edge. */
-  margin: 0 -8px;
+  /* Pulled out to a gap short of the panel's edges — the same gap the tabs
+     keep from the editor — so a row's hover reaches past the column of text
+     while the text itself stays on the column's edge. */
+  margin-inline: calc(var(--gap) - var(--pane-padding));
 }
 
 /* A row that opens a page: the group's name, its current value, and a chevron
@@ -36,7 +39,7 @@
   align-items: center;
   gap: 8px;
   height: var(--control-height);
-  padding: 0 8px;
+  padding-inline: calc(var(--pane-padding) - var(--gap));
   border-radius: var(--control-radius);
   color: var(--color-text);
   font-size: var(--control-font-size);
