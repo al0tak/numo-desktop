@@ -6,9 +6,7 @@ Electron + React + TypeScript invoice creator, built with electron-vite.
 
 **Whenever the platform already does something, let it.** Do not rebuild what the OS provides.
 
-Concretely: the window is a stock `BrowserWindow` — the OS draws the title bar, the frame, the corners and the window controls, and the renderer only ever fills the client area. No `titleBarStyle`, no `trafficLightPosition`, no `titleBarOverlay`, no `-webkit-app-region` drag strip, no window-radius tokens.
-
-The same applies inside the renderer: native form controls, `<dialog>`, the Popover API, and OS-driven behavior like `color-scheme` come before anything hand-rolled. Custom chrome is a last resort that needs a reason, and it carries a maintenance cost the platform version does not — traffic-light offsets, corner radii and title-bar heights all drift with each OS release.
+Native form controls, `<dialog>`, the Popover API, and OS-driven behavior like `color-scheme` come before anything hand-rolled. Where the OS still draws something — the window frame, its corners, the window controls — leave it alone rather than reproducing it. Anything hand-rolled needs a reason, and it carries a maintenance cost the platform version does not.
 
 ## Exports
 
