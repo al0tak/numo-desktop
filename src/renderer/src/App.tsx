@@ -2,6 +2,7 @@ import { HashRouter } from 'react-router'
 import { TabBar } from './components/TabBar'
 import { DocumentsProvider } from './DocumentsProvider'
 import { MainRouter } from './MainRouter'
+import { MenuCommands } from './MenuCommands'
 
 // Hash routing: the packaged app is loaded from file://, where path-based
 // routing has no server to fall back on. The router wraps the tab bar as well
@@ -10,6 +11,7 @@ export function App() {
   return (
     <HashRouter>
       <DocumentsProvider>
+        <MenuCommands />
         <div className="app">
           <TabBar className="titlebar" />
           <main className="content">

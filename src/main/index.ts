@@ -1,5 +1,7 @@
 import { join } from 'node:path'
 import { app, BrowserWindow } from 'electron'
+import { registerFileIpc } from './files'
+import { installApplicationMenu } from './menu'
 import { registerStoreIpc } from './store'
 
 function createWindow(): void {
@@ -34,6 +36,8 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   registerStoreIpc()
+  registerFileIpc()
+  installApplicationMenu()
   createWindow()
 
   app.on('activate', () => {

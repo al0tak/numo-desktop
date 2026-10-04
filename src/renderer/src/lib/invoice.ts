@@ -5,8 +5,7 @@
 // an object with a `value` alongside whatever describes how it is drawn, and
 // only this file and the two components that read it have to follow.
 //
-// Nothing here is persisted — a document lives in its tab (see
-// DocumentsProvider) and is gone when the tab or the window closes.
+// Saved to disk as a .numo file — see documentFile.ts for the format.
 
 export type InvoiceItem = {
   id: string
@@ -28,13 +27,11 @@ export const PAGE_FORMATS = {
 export type PageFormat = keyof typeof PAGE_FORMATS | 'custom'
 
 export type InvoiceDocument = {
-  // What the user calls the document — the name it goes by in the editor, never
-  // printed on the page. Not to be confused with `name` below.
-  title: string
   format: PageFormat
   width: number
   height: number
-  // What the document calls itself — invoice, factura, bill. Not a file name.
+  // What the document calls itself — invoice, factura, bill. Not the file name,
+  // which is what the editor calls it.
   name: string
   logo: string | null
   headerText: string
@@ -144,7 +141,6 @@ export function isMultilineTextElement(id: InvoiceTextElementId): boolean {
 // on the page reads as a decision that has been made about wording or format.
 export function createMockInvoiceDocument(): InvoiceDocument {
   return {
-    title: 'Untitled document',
     format: 'a4',
     width: PAGE_FORMATS.a4.width,
     height: PAGE_FORMATS.a4.height,

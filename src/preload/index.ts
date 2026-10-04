@@ -1,4 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import type { IpcRendererEvent } from 'electron'
+import type { CloseChoice, MenuCommand, OpenedFile } from '../shared/files'
 import type { StoreSchema } from '../shared/store'
 
 const store = {
@@ -9,6 +11,32 @@ const store = {
   delete: (key: keyof StoreSchema): Promise<void> => ipcRenderer.invoke('store:delete', key)
 }
 
+// Document files. Open and Save As resolve to null when the user cancels the
+// dialog.
+const files = {
+  open: (): Promise<OpenedFile | null> => ipcRenderer.invoke('file:open'),
+  save: (path: string, contents: string): Promise<void> => ipcRenderer.invoke('file:save', path, contents),
+  saveAs: (suggestedName: string, contents: string): Promise<string | null> =>
+    ipcRenderer.invoke('file:save-as', suggestedName, contents),
+  confirmClose: (title: string): Promise<CloseChoice> => ipcRenderer.invoke('file:confirm-close', title),
+  showError: (message: string, detail: string): Promise<void> =>
+    ipcRenderer.invoke('file:show-error', message, detail)
+}
+
+const menu = {
+  // Returns the unsubscribe, so an effect can hand it straight back as its
+  // cleanup.
+  onCommand: (listener: (command: MenuCommand) => void): (() => void) => {
+    const handler = (_event: IpcRendererEvent, command: MenuCommand) => listener(command)
+    ipcRenderer.on('menu:command', handler)
+    return () => ipcRenderer.removeListener('menu:command', handler)
+  }
+}
+
 export type StoreBridge = typeof store
+export type FilesBridge = typeof files
+export type MenuBridge = typeof menu
 
 contextBridge.exposeInMainWorld('store', store)
+contextBridge.exposeInMainWorld('files', files)
+contextBridge.exposeInMainWorld('menu', menu)

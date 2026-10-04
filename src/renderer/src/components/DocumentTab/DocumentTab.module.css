@@ -1,6 +1,6 @@
 /* Opts out of the bar's drag region as a whole, so no part of a tab drags the
    window instead of selecting it. A fixed width, so a tab never changes size
-   with its title or with what is typed into it — a long title truncates.
+   with its title — a long title truncates.
 
    --tab-background is the tab's colour in each state, kept in a property so
    the close button can fade the title out into whatever the tab is showing. */
@@ -54,28 +54,9 @@
   border-radius: var(--control-radius);
 }
 
-/* Reads as the tab's label until it is focused, when it shows itself as the
-   field it is. */
-.title {
-  flex: 1;
-  min-width: 0;
-  height: 24px;
-  padding: 0 5px;
-  border: 1px solid transparent;
-  border-radius: calc(var(--control-radius) - 2px);
-  background: transparent;
-  color: inherit;
-  font: inherit;
+/* The tab on screen reads a step heavier than the ones behind it. */
+.active .link {
   font-weight: 600;
-  text-overflow: ellipsis;
-  transition: var(--control-transition);
-}
-
-.title:focus {
-  outline: none;
-  border-color: var(--color-focus);
-  background: var(--color-control-surface);
-  box-shadow: var(--control-focus-ring);
 }
 
 /* Over the end of the title rather than beside it, so the title has the whole
@@ -114,10 +95,37 @@
   display: inline-flex;
 }
 
-/* Except while the title is being edited: the button would sit over the end
-   of the text being typed. */
-.tab:has(.title:focus) .close {
+/* Unsaved changes keep the button out on every tab, showing a dot in place of
+   the cross. Pointing at the button itself — not just the tab — or reaching it
+   by keyboard brings the cross back, since closing is what a press does. */
+.unsaved .close {
+  display: inline-flex;
+}
+
+.dot {
   display: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.unsaved .dot {
+  display: block;
+}
+
+.unsaved .cross {
+  display: none;
+}
+
+.unsaved .close:hover .dot,
+.unsaved .close:focus-visible .dot {
+  display: none;
+}
+
+.unsaved .close:hover .cross,
+.unsaved .close:focus-visible .cross {
+  display: block;
 }
 
 .close:hover {
