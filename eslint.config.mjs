@@ -66,6 +66,13 @@ export default [
     }
   },
 
+  // shadcn primitives export their cva variants and hooks beside the
+  // components, the way upstream ships them.
+  {
+    files: ['src/renderer/src/components/primitives/**/*.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' }
+  },
+
   // Main and preload run in Node, not the browser.
   {
     files: ['src/main/**/*.ts', 'src/preload/**/*.ts', '*.config.{ts,mjs,js}'],

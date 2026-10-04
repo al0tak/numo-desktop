@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { storeDefaults, type StoreSchema } from '../../../../shared/store'
 import { HomePageButton } from '../HomePageButton'
 import { store } from '../../lib/store'
-import styles from './ThemeToggleButton.module.css'
 
 type Theme = StoreSchema['theme']
 
@@ -40,9 +39,11 @@ export function ThemeToggleButton() {
   }
 
   return (
+    // Neutral, so the pair on the home page reads as one loud action and one
+    // quiet one, rather than two equal accents.
     <HomePageButton
-      className={styles.themeToggleButton}
-      icon={<Icon size={24} strokeWidth={2} />}
+      variant="secondary"
+      icon={<Icon strokeWidth={2} />}
       aria-label={`Theme: ${THEME_LABELS[theme]}`}
       onClick={cycleTheme}
     >

@@ -1,6 +1,5 @@
 import type { ComponentPropsWithRef, MouseEvent } from 'react'
-import { cx } from '../../lib/cx'
-import styles from './InvoiceElement.module.css'
+import { cn } from 'cn'
 
 export type InvoiceElementProps = ComponentPropsWithRef<'div'> & {
   isSelected: boolean
@@ -34,7 +33,24 @@ export function InvoiceElement({
 
   return (
     <div
-      className={cx(styles.invoiceElement, isPart && styles.part, isSelected && styles.selected, className)}
+      className={cn(
+        // Transparent rather than absent, so the ring appearing on hover does not
+        // change the box and shift the text under it. The offset is in
+        // millimetres like the rest of the page, so it holds its distance from
+        // the content at any zoom.
+        'rounded-[1mm] outline outline-offset-[1mm] outline-transparent',
+        isPart
+          ? // The part of a selected group that the click landed on, marked
+            // with a wash rather than a ring so it reads as being inside the
+            // group's ring and not as a second selection. It is spread past the
+            // box by the same millimetre the ring stands off by, so a short run
+            // of text is marked as generously as a whole element is.
+            isSelected && 'bg-ring/14 shadow-[0_0_0_1mm_color-mix(in_srgb,var(--ring)_14%,transparent)]'
+          : isSelected
+            ? 'outline-2 outline-ring'
+            : 'hover:outline-ring/40',
+        className
+      )}
       {...rest}
       onClick={handleClick}
     />

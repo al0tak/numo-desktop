@@ -12,4 +12,4 @@ export type CloseChoice = 'save' | 'discard' | 'cancel'
 
 // Commands the application menu sends to the window it is acting on. The
 // menu owns the shortcuts, so these arrive whether they were clicked or typed.
-export type MenuCommand = 'new' | 'open' | 'save' | 'save-as' | 'close-tab'
+export type MenuCommand = 'new' | 'open' | 'save' | 'save-as' | 'close-tab' | 'toggle-sidebar'

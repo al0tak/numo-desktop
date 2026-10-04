@@ -7,7 +7,7 @@ import type { MenuCommand } from '../shared/files'
 // command, they work wherever focus is in the window, and they are the same
 // whether the command is clicked or typed.
 //
-// Everything but File is the platform's own stock menu, by role.
+// Everything but File and View is the platform's own stock menu, by role.
 export function installApplicationMenu(): void {
   const isMac = process.platform === 'darwin'
 
@@ -29,7 +29,23 @@ export function installApplicationMenu(): void {
       ]
     },
     { role: 'editMenu' },
-    { role: 'viewMenu' },
+    {
+      // The stock View menu's items, by role, under the app's own command.
+      label: 'View',
+      submenu: [
+        command('Toggle Sidebar', 'CmdOrCtrl+B', 'toggle-sidebar'),
+        { type: 'separator' },
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { role: 'toggleDevTools' },
+        { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
     { role: 'windowMenu' }
   ]
 

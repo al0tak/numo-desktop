@@ -1,15 +1,17 @@
 import { Link } from '@tanstack/react-router'
 import { ChevronLeft } from 'lucide-react'
-import { Field } from '../Field'
-import { Input } from '../Input'
-import { Select } from '../Select'
+import { useId } from 'react'
+import { Field, FieldLabel } from '../primitives/Field'
+import { Input } from '../primitives/Input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/Select'
 import { PAGE_FORMATS } from '../../lib/invoice'
 import type { PageFormat } from '../../lib/invoice'
 import { useDocumentPane } from './context'
-import styles from './DocumentPane.module.css'
+import { HEADING, PAGE } from './styles'
 
 export function FormatPage() {
   const { invoice, onChange } = useDocumentPane()
+  const fieldId = useId()
 
   const setFormat = (format: PageFormat) => {
     // Custom is not a size, it is the mark left when one is typed in by hand, so
@@ -32,31 +34,41 @@ export function FormatPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <Link to="/" className={styles.backLink}>
-        <ChevronLeft size={14} aria-hidden="true" />
+    <div className={PAGE}>
+      {/* Above the heading it returns from and quieter than it, nudged left so
+          the chevron's empty side does not push it off the column's edge. */}
+      <Link
+        to="/"
+        className="-mb-1.5 -ml-1 inline-flex cursor-default items-center gap-0.5 self-start rounded-sm text-xs text-muted-foreground hover:text-foreground focus-visible:outline-3 focus-visible:-outline-offset-1 focus-visible:outline-ring"
+      >
+        <ChevronLeft className="size-3.5" aria-hidden="true" />
         Document
       </Link>
-      <h2 className={styles.heading}>Format</h2>
+      <h2 className={HEADING}>Format</h2>
 
-      <Field label="Format">
-        <Select
-          value={invoice.format}
-          onChange={(event) => setFormat(event.currentTarget.value as PageFormat)}
-        >
-          {Object.entries(PAGE_FORMATS).map(([format, { label }]) => (
-            <option key={format} value={format}>
-              {label}
-            </option>
-          ))}
-          <option value="custom">Custom</option>
+      <Field>
+        <FieldLabel htmlFor={`${fieldId}-format`}>Format</FieldLabel>
+        <Select value={invoice.format} onValueChange={(format) => setFormat(format as PageFormat)}>
+          <SelectTrigger id={`${fieldId}-format`}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {Object.entries(PAGE_FORMATS).map(([format, { label }]) => (
+              <SelectItem key={format} value={format}>
+                {label}
+              </SelectItem>
+            ))}
+            <SelectItem value="custom">Custom</SelectItem>
+          </SelectContent>
         </Select>
       </Field>
 
       {/* The two sides of one size, side by side. */}
-      <div className={styles.row}>
-        <Field label="Width">
+      <div className="grid grid-cols-2 gap-2">
+        <Field>
+          <FieldLabel htmlFor={`${fieldId}-width`}>Width</FieldLabel>
           <Input
+            id={`${fieldId}-width`}
             type="number"
             min={1}
             value={invoice.width}
@@ -64,8 +76,10 @@ export function FormatPage() {
           />
         </Field>
 
-        <Field label="Height">
+        <Field>
+          <FieldLabel htmlFor={`${fieldId}-height`}>Height</FieldLabel>
           <Input
+            id={`${fieldId}-height`}
             type="number"
             min={1}
             value={invoice.height}

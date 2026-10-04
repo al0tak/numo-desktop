@@ -1,7 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ComponentPropsWithoutRef, MouseEvent, PointerEvent } from 'react'
-import { cx } from '../../lib/cx'
-import styles from './EditorView.module.css'
+import { cn } from 'cn'
 
 export type EditorViewProps = ComponentPropsWithoutRef<'div'>
 
@@ -234,10 +233,15 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
   return (
     <div
       ref={viewportRef}
-      className={cx(
-        styles.viewport,
-        isHandArmed && styles.handArmed,
-        isDragging && styles.dragging,
+      className={cn(
+        // No rubber-banding or back-swipe either, as belt and braces for the
+        // preventDefault() in the wheel handler.
+        'relative size-full touch-none overflow-hidden overscroll-none bg-canvas',
+        // The two halves of the hand tool: an open hand once space arms it, a
+        // closed one for as long as the drag lasts — which moves the document
+        // rather than sweeping a selection over it.
+        isHandArmed && 'cursor-grab',
+        isDragging && 'cursor-grabbing select-none',
         className
       )}
       {...rest}
@@ -249,7 +253,11 @@ export function EditorView({ className, children, ...rest }: EditorViewProps) {
     >
       <div
         ref={planeRef}
-        className={styles.plane}
+        // The transform is written as translate-then-scale from the top-left
+        // origin, which is what the pointer-anchored zoom math assumes. Only the
+        // transform changes while panning, so the plane gets its own layer
+        // instead of repainting the content on every wheel event.
+        className="absolute top-0 left-0 origin-top-left will-change-transform"
         style={{ transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})` }}
       >
         {children}
@@ -266,5 +274,10 @@ function clamp(value: number, min: number, max: number): number {
 // the keydown listener is on the window, so it sees the sidebar's fields too.
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false
-  return target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
+  return (
+    target.isContentEditable ||
+    ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) ||
+    // A custom select's trigger, which space opens.
+    target.getAttribute('role') === 'combobox'
+  )
 }

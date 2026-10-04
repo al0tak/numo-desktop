@@ -6,8 +6,11 @@
   "main": "out/main/index.js",
   "dependencies": {
     "@tanstack/react-router": "^1.170.41",
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.4.0",
     "electron-store": "^11.0.2",
     "lucide-react": "^1.28.0",
+    "radix-ui": "^1.6.7",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router": "^8.3.0"
@@ -17,6 +20,7 @@
     "@babel/eslint-parser": "^7.29.7",
     "@babel/preset-typescript": "^7.29.7",
     "@eslint/js": "^9.39.5",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^5.2.0",
@@ -28,6 +32,8 @@
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^16.5.0",
     "prettier": "^3.9.6",
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0",
     "typescript": "^7.0.2",
     "vite": "^7.3.6"
   },

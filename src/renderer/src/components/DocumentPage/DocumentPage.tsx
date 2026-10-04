@@ -1,6 +1,5 @@
 import type { ComponentPropsWithRef } from 'react'
-import { cx } from '../../lib/cx'
-import styles from './DocumentPage.module.css'
+import { cn } from 'cn'
 
 export type DocumentPageProps = ComponentPropsWithRef<'div'> & {
   // Millimetres, the units the sheet is printed in. CSS millimetres are a fixed
@@ -18,7 +17,7 @@ export type DocumentPageProps = ComponentPropsWithRef<'div'> & {
 export function DocumentPage({ className, width, height, style, ...rest }: DocumentPageProps) {
   return (
     <div
-      className={cx(styles.documentPage, className)}
+      className={cn('bg-white shadow-[0_1px_3px_rgb(0_0_0/0.08)]', className)}
       style={{ width: `${width}mm`, height: `${height}mm`, ...style }}
       {...rest}
     />

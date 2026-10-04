@@ -1,3 +1,32 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+/* Dark is whatever the color-scheme below resolves to: pinned by
+   [data-theme='dark'], or the OS preference while the theme is not pinned to
+   light. Kept in step with it so a primitive's dark: utilities and the
+   light-dark() tokens never disagree. */
+@custom-variant dark {
+  &:where([data-theme='dark'], [data-theme='dark'] *) {
+    @slot;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme='light']), :root:not([data-theme='light']) *) {
+      @slot;
+    }
+  }
+}
+
+/* The window's drag strip. With the OS title bar hidden, whatever opts in is
+   what the window is dragged by, and anything interactive inside it opts out. */
+@utility app-region-drag {
+  -webkit-app-region: drag;
+}
+
+@utility app-region-no-drag {
+  -webkit-app-region: no-drag;
+}
+
 :root {
   /* Auto is the absence of an override: both keywords stay in play, so the OS
      preference decides which side of every light-dark() below is used. The
@@ -17,35 +46,54 @@
      them. Anything at the left end of the strip starts after this. */
   --traffic-lights-end: 72px;
 
-  --color-accent: #52c793;
-  --color-focus: #2f7ff5;
-  --color-background: light-dark(#ffffff, #1c1c1e);
-  /* Behind the editor's pages, a step off the page colour so their edges show. */
-  --color-canvas: light-dark(#dddddd, #1c1c1e);
-  --color-surface: light-dark(#ffffff, #2b2b2e);
-  --color-text: light-dark(#1a1a1a, #ececec);
-  --color-text-muted: color-mix(in srgb, var(--color-text) 55%, transparent);
-  --color-border: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.1));
-  /* Tabs in the top bar: a faint wash under the pointer, a firmer one for the
-     tab on screen. Mixed into the surface rather than laid over it, so they are
-     opaque — a tab's close button fades its title out into this colour. */
-  --color-tab-hover: color-mix(in srgb, var(--color-text) 5%, var(--color-surface));
-  --color-tab-active: color-mix(in srgb, var(--color-text) 9%, var(--color-surface));
-
   /* One box shared by every form control, so an input, a select and a textarea
      standing next to each other line up and read as the same kind of thing.
-     Each control's stylesheet spends these rather than picking its own. */
+     The primitives spend these rather than picking their own. */
   --control-height: 30px;
-  --control-radius: 7px;
   --control-padding: 9px;
-  --control-font-size: 13px;
-  --control-transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
-  --color-control-surface: light-dark(#ffffff, rgb(255 255 255 / 0.045));
-  --color-control-border: light-dark(rgb(0 0 0 / 0.14), rgb(255 255 255 / 0.12));
-  --color-control-border-hover: light-dark(rgb(0 0 0 / 0.26), rgb(255 255 255 / 0.22));
-  /* Sits just outside the border, the way a focus ring does — an outline would
-     have to clear the border to be seen, which reads as a halo instead. */
-  --control-focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-focus) 28%, transparent);
+
+  /* Colours, named the way shadcn's primitives expect them. */
+  --background: light-dark(#ffffff, #1c1c1e);
+  --foreground: light-dark(#1a1a1a, #ececec);
+  /* The frame: the tab bar and the sidebar. */
+  --surface: light-dark(#ffffff, #2b2b2e);
+  /* Behind the editor's pages, a step off the page colour so their edges show. */
+  --canvas: light-dark(#dddddd, #1c1c1e);
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface);
+  --popover-foreground: var(--foreground);
+  --primary: #52c793;
+  --primary-foreground: #ffffff;
+  /* The quiet counterpart to primary, for an action that should not compete
+     with it. */
+  --secondary: light-dark(#8a8a8e, #4a4a4f);
+  --secondary-foreground: #ffffff;
+  --muted: color-mix(in srgb, var(--foreground) 5%, var(--surface));
+  --muted-foreground: color-mix(in srgb, var(--foreground) 55%, transparent);
+  /* A faint wash under the pointer, and a firmer one for what is on screen —
+     the tab, the home button. Mixed into the surface rather than laid over it,
+     so they are opaque: a tab's close button fades its title out into them. */
+  --accent: color-mix(in srgb, var(--foreground) 5%, var(--surface));
+  --accent-active: color-mix(in srgb, var(--foreground) 9%, var(--surface));
+  --accent-foreground: var(--foreground);
+  --destructive: #e5484d;
+  --border: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.1));
+  /* A control's own box: its border at rest and under the pointer, and the
+     fill inside it. */
+  --input: light-dark(rgb(0 0 0 / 0.14), rgb(255 255 255 / 0.12));
+  --input-hover: light-dark(rgb(0 0 0 / 0.26), rgb(255 255 255 / 0.22));
+  --control: light-dark(#ffffff, rgb(255 255 255 / 0.045));
+  --ring: #2f7ff5;
+
+  --sidebar: var(--surface);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 }
 
 :root[data-theme='light'] {
@@ -56,53 +104,63 @@
   color-scheme: dark;
 }
 
-* {
-  box-sizing: border-box;
+@theme inline {
+  --font-sans: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* shadcn sizes its controls' text as text-sm; 13px is the control size the
+     app is drawn at. */
+  --text-sm: 13px;
+
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 9px;
+  --radius-xl: 12px;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-canvas: var(--canvas);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-active: var(--accent-active);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-hover: var(--input-hover);
+  --color-control: var(--control);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-html,
-body,
-#root {
-  height: 100%;
-  margin: 0;
-}
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  background: var(--color-background);
-  color: var(--color-text);
-}
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
 
-/* One cell holding both children: the tab bar floats over the content
-   instead of stacking above it, so a page's panels still run the full height of
-   the client area and pass under the window controls. */
-.app {
-  display: grid;
-  grid-template: 1fr / 1fr;
-  height: 100%;
-}
-
-/* With the OS title bar hidden the tab bar is the only thing left to drag the
-   window by, so it spans the full width. Anything interactive inside it must
-   opt out. Above the content, whose own layers (the editor's sidebar) would
-   otherwise compete with it. */
-.titlebar {
-  -webkit-app-region: drag;
-  grid-area: 1 / 1;
-  align-self: start;
-  z-index: 2;
-  height: var(--titlebar-height);
-  user-select: none;
-}
-
-.titlebar button,
-.titlebar input,
-.titlebar a,
-.no-drag {
-  -webkit-app-region: no-drag;
-}
-
-.content {
-  grid-area: 1 / 1;
-  overflow: auto;
+  body {
+    @apply bg-background font-sans text-foreground;
+  }
 }

@@ -1,7 +1,0 @@
-/* Flush against the window — no inset, no radius, no shadow, and no line on
-   its open edge either: the canvas beside it has an edge of its own. */
-.pageSidebar {
-  width: 280px;
-  height: 100%;
-  background: var(--color-surface);
-}
