@@ -1,4 +1,4 @@
-import { PAGE_FORMATS } from './invoice'
+import { INVOICE_PARTS, PAGE_FORMATS } from './invoice'
 import type { InvoiceDocument, InvoiceItem } from './invoice'
 
 // The .numo file: plain JSON, the document wrapped in a small header.
@@ -10,7 +10,8 @@ import type { InvoiceDocument, InvoiceItem } from './invoice'
 // Images are embedded as data URLs (the logo today), so a file is the whole
 // document and never depends on anything beside it.
 const FORMAT = 'numo-invoice'
-const VERSION = 1
+// 2: `parts`, which blocks are on the page.
+const VERSION = 2
 
 type DocumentFile = {
   format: typeof FORMAT
@@ -40,11 +41,25 @@ export function parseDocumentFile(contents: string): InvoiceDocument {
   if (typeof file.version !== 'number' || file.version > VERSION) {
     throw new Error('The file was saved by a newer version of Numo. Update the app to open it.')
   }
-  if (!isInvoiceDocument(file.document)) {
+  const document = migrate(file.version, file.document)
+  if (!isInvoiceDocument(document)) {
     throw new Error('The file is damaged — the invoice inside it is incomplete.')
   }
 
-  return file.document
+  return document
+}
+
+// Brings a document saved by an older version up to the current shape, one
+// version at a time.
+function migrate(version: number, document: unknown): unknown {
+  if (!isRecord(document)) return document
+
+  // Version 1 had no way to take a block off the page, so all of them are on.
+  if (version < 2) {
+    document = { ...document, parts: Object.fromEntries(INVOICE_PARTS.map(({ id }) => [id, true])) }
+  }
+
+  return document
 }
 
 const STRING_FIELDS = [
@@ -69,7 +84,9 @@ function isInvoiceDocument(value: unknown): value is InvoiceDocument {
     (value.logo === null || typeof value.logo === 'string') &&
     STRING_FIELDS.every((field) => typeof value[field] === 'string') &&
     Array.isArray(value.items) &&
-    value.items.every(isInvoiceItem)
+    value.items.every(isInvoiceItem) &&
+    isRecord(value.parts) &&
+    INVOICE_PARTS.every(({ id }) => typeof (value.parts as Record<string, unknown>)[id] === 'boolean')
   )
 }
 

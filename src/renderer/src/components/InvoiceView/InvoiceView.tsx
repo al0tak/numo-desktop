@@ -35,6 +35,7 @@ export type InvoiceViewProps = {
 export function InvoiceView({ invoice, selection, onSelect }: InvoiceViewProps) {
   // What is drawn as picked, which for a part of a group is the whole group.
   const inspected = inspectedSelection(selection)
+  const { parts } = invoice
 
   // Each text field's element id is its key on the document, so one helper
   // covers drawing it and wiring up its selection.
@@ -56,77 +57,87 @@ export function InvoiceView({ invoice, selection, onSelect }: InvoiceViewProps) 
       {/* Logo, title, number, date and the text under them are one block on the
           page and one selection: a click anywhere in here inspects the header,
           and the part it landed on is the part the sidebar leads with. */}
-      <InvoiceElement
-        className="flex flex-col gap-[8mm]"
-        isSelected={inspected === 'header'}
-        onSelect={() => onSelect('header')}
-      >
-        <div className="flex items-start justify-between gap-[8mm]">
-          <InvoiceElement
-            className="flex-none"
-            isSelected={selection === 'logo'}
-            isPart
-            onSelect={() => onSelect('logo')}
-          >
-            {invoice.logo ? (
-              <img className="block max-h-[20mm] max-w-[40mm]" src={invoice.logo} alt="" />
-            ) : (
-              <span className="grid h-[16mm] w-[30mm] place-items-center rounded-[1mm] border border-dashed border-[#c4c4c4] text-[8pt] text-[#9a9a9a]">
-                Logo
-              </span>
-            )}
-          </InvoiceElement>
-          <div className="flex flex-col items-end gap-[2mm] text-right">
-            {text('name', 'text-[20pt] font-semibold tracking-[0.02em] uppercase')}
-            <div className="grid grid-cols-[auto_auto] items-baseline gap-x-[3mm]">
-              <span className="text-[#8a8a8a]">No.</span>
-              {text('number')}
-              <span className="text-[#8a8a8a]">Date</span>
-              {text('date')}
+      {parts.header && (
+        <InvoiceElement
+          className="flex flex-col gap-[8mm]"
+          isSelected={inspected === 'header'}
+          onSelect={() => onSelect('header')}
+        >
+          <div className="flex items-start justify-between gap-[8mm]">
+            <InvoiceElement
+              className="flex-none"
+              isSelected={selection === 'logo'}
+              isPart
+              onSelect={() => onSelect('logo')}
+            >
+              {invoice.logo ? (
+                <img className="block max-h-[20mm] max-w-[40mm]" src={invoice.logo} alt="" />
+              ) : (
+                <span className="grid h-[16mm] w-[30mm] place-items-center rounded-[1mm] border border-dashed border-[#c4c4c4] text-[8pt] text-[#9a9a9a]">
+                  Logo
+                </span>
+              )}
+            </InvoiceElement>
+            <div className="flex flex-col items-end gap-[2mm] text-right">
+              {text('name', 'text-[20pt] font-semibold tracking-[0.02em] uppercase')}
+              <div className="grid grid-cols-[auto_auto] items-baseline gap-x-[3mm]">
+                <span className="text-[#8a8a8a]">No.</span>
+                {text('number')}
+                <span className="text-[#8a8a8a]">Date</span>
+                {text('date')}
+              </div>
             </div>
           </div>
+
+          {text('headerText')}
+        </InvoiceElement>
+      )}
+
+      {parts.parties && (
+        <div className="grid grid-cols-2 gap-[8mm]">
+          <section className="flex flex-col gap-[1mm]">
+            <h2 className={PARTY_LABEL}>From</h2>
+            {text('issuer')}
+          </section>
+          <section className="flex flex-col gap-[1mm]">
+            <h2 className={PARTY_LABEL}>Bill to</h2>
+            {text('recipient')}
+          </section>
         </div>
+      )}
 
-        {text('headerText')}
-      </InvoiceElement>
-
-      <div className="grid grid-cols-2 gap-[8mm]">
-        <section className="flex flex-col gap-[1mm]">
-          <h2 className={PARTY_LABEL}>From</h2>
-          {text('issuer')}
-        </section>
-        <section className="flex flex-col gap-[1mm]">
-          <h2 className={PARTY_LABEL}>Bill to</h2>
-          {text('recipient')}
-        </section>
-      </div>
-
-      <InvoiceElement isSelected={selection === 'items'} onSelect={() => onSelect('items')}>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className={cn(HEADER_CELL, 'w-full text-left')}>Item</th>
-              <th className={cn(HEADER_CELL, NUMBER_CELL)}>Qty</th>
-              <th className={cn(HEADER_CELL, NUMBER_CELL)}>Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoice.items.map((item) => (
-              <tr key={item.id}>
-                <td className={cn(BODY_CELL, 'w-full text-left')}>{item.name}</td>
-                {/* A line with no amount stays blank rather than reading as a
-                    quantity of nothing. */}
-                <td className={cn(BODY_CELL, NUMBER_CELL)}>{item.amount}</td>
-                <td className={cn(BODY_CELL, NUMBER_CELL)}>{item.price}</td>
+      {parts.items && (
+        <InvoiceElement isSelected={selection === 'items'} onSelect={() => onSelect('items')}>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr>
+                <th className={cn(HEADER_CELL, 'w-full text-left')}>Item</th>
+                <th className={cn(HEADER_CELL, NUMBER_CELL)}>Qty</th>
+                <th className={cn(HEADER_CELL, NUMBER_CELL)}>Price</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </InvoiceElement>
+            </thead>
+            <tbody>
+              {invoice.items.map((item) => (
+                <tr key={item.id}>
+                  <td className={cn(BODY_CELL, 'w-full text-left')}>{item.name}</td>
+                  {/* A line with no amount stays blank rather than reading as a
+                    quantity of nothing. */}
+                  <td className={cn(BODY_CELL, NUMBER_CELL)}>{item.amount}</td>
+                  <td className={cn(BODY_CELL, NUMBER_CELL)}>{item.price}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </InvoiceElement>
+      )}
 
-      {text('underTableText')}
-      {text('bottomText', 'mt-[4mm]')}
-      {text('footer', FOOTER)}
+      {parts.notes && (
+        <>
+          {text('underTableText')}
+          {text('bottomText', 'mt-[4mm]')}
+        </>
+      )}
+      {parts.footer && text('footer', FOOTER)}
     </div>
   )
 }

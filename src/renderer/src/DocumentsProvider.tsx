@@ -16,8 +16,8 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
   const addDocument = (document: InvoiceDocument, filePath?: string) => {
     const id = crypto.randomUUID()
     const open: OpenDocument = filePath
-      ? { id, document, filePath, savedDocument: document }
-      : { id, document, filePath: null, savedDocument: null }
+      ? { id, document, filePath, draftName: null, savedDocument: document }
+      : { id, document, filePath: null, draftName: null, savedDocument: null }
 
     setDocuments((current) => [...current, open])
     return id
@@ -33,12 +33,22 @@ export function DocumentsProvider({ children }: { children: ReactNode }) {
     )
   }
 
+  const setFilePath = (id: string, filePath: string) => {
+    setDocuments((current) => current.map((open) => (open.id === id ? { ...open, filePath } : open)))
+  }
+
+  const setDraftName = (id: string, draftName: string) => {
+    setDocuments((current) => current.map((open) => (open.id === id ? { ...open, draftName } : open)))
+  }
+
   const closeDocument = (id: string) => {
     setDocuments((current) => current.filter((open) => open.id !== id))
   }
 
   return (
-    <DocumentsContext value={{ documents, addDocument, updateDocument, markSaved, closeDocument }}>
+    <DocumentsContext
+      value={{ documents, addDocument, updateDocument, markSaved, setFilePath, setDraftName, closeDocument }}
+    >
       {children}
     </DocumentsContext>
   )

@@ -1,7 +1,7 @@
-import { House } from 'lucide-react'
-import { NavLink } from 'react-router'
-import { DocumentTab } from '../DocumentTab'
+import { Link } from '@tanstack/react-router'
 import { cn } from 'cn'
+import { House } from 'lucide-react'
+import { DocumentTab } from '../DocumentTab'
 import { useDocumentActions } from '../../lib/documentActions'
 import { documentTitle, hasUnsavedChanges, useDocuments } from '../../lib/documents'
 
@@ -19,8 +19,8 @@ export type TabBarProps = {
 // the home button starts clear of them by the same --gap that separates every
 // item in the row, so the lights read as one more of them.
 //
-// Items are a gap short of the bar at the top and at the bottom, which makes
-// the space between the tabs and the editor under them that same gap too.
+// Items are a gap short of the bar at the top and at the bottom, and a hairline
+// along its bottom edge parts it from the editor under it.
 export function TabBar({ className }: TabBarProps) {
   const { documents } = useDocuments()
   const { activeId, closeDocument } = useDocumentActions()
@@ -28,22 +28,22 @@ export function TabBar({ className }: TabBarProps) {
   return (
     <header
       className={cn(
-        'flex h-(--titlebar-height) items-center gap-(--gap) bg-surface pr-2.5 pl-[calc(var(--traffic-lights-end)+var(--gap))] select-none app-region-drag [--tab-height:calc(var(--titlebar-height)-2*var(--gap))]',
+        'flex h-(--titlebar-height) items-center gap-(--gap) border-b bg-surface pr-2.5 pl-[calc(var(--traffic-lights-end)+var(--gap))] select-none app-region-drag [--tab-height:calc(var(--titlebar-height)-2*var(--gap))]',
         className
       )}
     >
       {/* Wider than it is tall, so it reads as a tab of its own at the head of
-          the row rather than as a square button beside it. NavLink marks the
+          the row rather than as a square button beside it. Link marks the
           route on screen with aria-current, which is what the active look keys
           off rather than a class of our own. */}
-      <NavLink
-        to="/home"
+      <Link
+        to="/"
         className="inline-flex h-(--tab-height) w-[calc(var(--tab-height)*1.4)] flex-none cursor-default items-center justify-center rounded-md text-muted-foreground transition-colors app-region-no-drag hover:bg-accent focus-visible:outline-3 focus-visible:-outline-offset-1 focus-visible:outline-ring aria-[current=page]:bg-accent-active aria-[current=page]:text-foreground"
         aria-label="Home"
         title="Home"
       >
         <House className="size-4" strokeWidth={2} aria-hidden="true" />
-      </NavLink>
+      </Link>
       {/* The tabs do not drag, but the bar's empty space after the last one
           does — that is the region left for moving the window. */}
       <nav className="flex min-w-0 items-center gap-(--gap)" aria-label="Open documents">
@@ -51,7 +51,7 @@ export function TabBar({ className }: TabBarProps) {
           <DocumentTab
             key={open.id}
             title={documentTitle(open)}
-            to={`/editor/${open.id}`}
+            documentId={open.id}
             isActive={open.id === activeId}
             hasUnsavedChanges={hasUnsavedChanges(open)}
             onClose={() => void closeDocument(open.id)}

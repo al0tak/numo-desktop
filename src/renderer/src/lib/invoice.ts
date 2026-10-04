@@ -26,6 +26,11 @@ export const PAGE_FORMATS = {
 // the absence of a preset, so it has no entry in PAGE_FORMATS.
 export type PageFormat = keyof typeof PAGE_FORMATS | 'custom'
 
+// The blocks the page is built from, top to bottom. Each can be taken off the
+// page and put back; what is in it is kept either way, so taking a block off
+// loses nothing.
+export type InvoicePartId = 'header' | 'parties' | 'items' | 'notes' | 'footer'
+
 export type InvoiceDocument = {
   format: PageFormat
   width: number
@@ -45,6 +50,8 @@ export type InvoiceDocument = {
   underTableText: string
   bottomText: string
   footer: string
+  // Which blocks are on the page.
+  parts: Record<InvoicePartId, boolean>
 }
 
 // The fields that are a single run of text on the page. Their ids are their
@@ -60,18 +67,6 @@ export type InvoiceTextElementId =
   | 'bottomText'
   | 'footer'
 
-const TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
-  'name',
-  'headerText',
-  'number',
-  'date',
-  'issuer',
-  'recipient',
-  'underTableText',
-  'bottomText',
-  'footer'
-]
-
 // The ones whose value is a block of lines rather than one — an address, a
 // note. Only they are worth a multi-line control in the sidebar.
 const MULTILINE_TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
@@ -86,7 +81,7 @@ const MULTILINE_TEXT_ELEMENT_IDS: InvoiceTextElementId[] = [
 export type InvoiceElementId = InvoiceTextElementId | 'logo' | 'items'
 
 // Parts of the page that are read as one block are edited as one: clicking any
-// of them selects the block, and the sidebar inspects the whole of it at once,
+// of them selects the block, and the page draws one ring around the whole of it,
 // rather than making the logo, the title and the number three separate trips.
 export type InvoiceGroupId = 'header'
 
@@ -95,14 +90,22 @@ export const GROUP_ELEMENT_IDS: Record<InvoiceGroupId, InvoiceElementId[]> = {
   header: ['logo', 'name', 'number', 'date', 'headerText']
 }
 
+// The page's blocks, in order, with the elements each one holds.
+export const INVOICE_PARTS: { id: InvoicePartId; label: string; elements: InvoiceElementId[] }[] = [
+  { id: 'header', label: 'Header', elements: GROUP_ELEMENT_IDS.header },
+  { id: 'parties', label: 'Top text', elements: ['issuer', 'recipient'] },
+  { id: 'items', label: 'Table', elements: ['items'] },
+  { id: 'notes', label: 'Bottom text', elements: ['underTableText', 'bottomText'] },
+  { id: 'footer', label: 'Footer', elements: ['footer'] }
+]
+
 // What is picked on the page. It is a part rather than the group it belongs to,
 // because which part was clicked still matters — the sidebar puts the cursor in
 // that part's field. With nothing picked it falls back to the document itself,
 // which is where the editor starts.
 export type InvoiceSelection = 'document' | InvoiceGroupId | InvoiceElementId
 
-// What the sidebar inspects for a selection, and what the page draws a ring
-// around: the group a part belongs to, or the selection itself when it is in
+// What the page draws a ring around for a selection: the group a part belongs to, or the selection itself when it is in
 // none. Every part of a group answers with the group, so this is also how the
 // page asks whether an element it is about to draw is a part of one.
 export function inspectedSelection(selection: InvoiceSelection): InvoiceSelection {
@@ -110,6 +113,22 @@ export function inspectedSelection(selection: InvoiceSelection): InvoiceSelectio
   const group = groups.find((id) => GROUP_ELEMENT_IDS[id].includes(selection as InvoiceElementId))
 
   return group ?? selection
+}
+
+// The block a selection belongs to, or null for the document, which is in
+// none. The header group shares its block's id; anything else is an element.
+export function partOf(selection: InvoiceSelection): InvoicePartId | null {
+  const part = INVOICE_PARTS.find(
+    ({ id, elements }) => id === selection || elements.includes(selection as InvoiceElementId)
+  )
+  return part?.id ?? null
+}
+
+// Whether a selection is on the page: the document always is, and an element
+// or group only while the block it belongs to is.
+export function isOnPage(invoice: InvoiceDocument, selection: InvoiceSelection): boolean {
+  const part = partOf(selection)
+  return part ? invoice.parts[part] : true
 }
 
 export const SELECTION_LABELS: Record<InvoiceSelection, string> = {
@@ -126,10 +145,6 @@ export const SELECTION_LABELS: Record<InvoiceSelection, string> = {
   underTableText: 'Under-table text',
   bottomText: 'Bottom text',
   footer: 'Footer'
-}
-
-export function isTextElement(selection: InvoiceSelection): selection is InvoiceTextElementId {
-  return TEXT_ELEMENT_IDS.includes(selection as InvoiceTextElementId)
 }
 
 export function isMultilineTextElement(id: InvoiceTextElementId): boolean {
@@ -159,6 +174,7 @@ export function createMockInvoiceDocument(): InvoiceDocument {
     ],
     underTableText: 'Under-table text',
     bottomText: 'Bottom text',
-    footer: 'Footer'
+    footer: 'Footer',
+    parts: { header: true, parties: true, items: true, notes: true, footer: true }
   }
 }

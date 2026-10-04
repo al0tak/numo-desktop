@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron'
 import ElectronStore from 'electron-store'
-import { storeDefaults, type StoreSchema } from '../shared/store'
+import { storeDefaults } from '../shared/store'
+import type { StoreSchema } from '../shared/store'
 
 // A JSON file in the OS-specific user data directory (app.getPath('userData')),
 // written atomically. The main process owns it; the renderer reaches it through

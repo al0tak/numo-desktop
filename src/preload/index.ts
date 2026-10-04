@@ -18,6 +18,8 @@ const files = {
   save: (path: string, contents: string): Promise<void> => ipcRenderer.invoke('file:save', path, contents),
   saveAs: (suggestedName: string, contents: string): Promise<string | null> =>
     ipcRenderer.invoke('file:save-as', suggestedName, contents),
+  // Renames the file in its folder; resolves to its new path.
+  rename: (path: string, name: string): Promise<string> => ipcRenderer.invoke('file:rename', path, name),
   confirmClose: (title: string): Promise<CloseChoice> => ipcRenderer.invoke('file:confirm-close', title),
   showError: (message: string, detail: string): Promise<void> =>
     ipcRenderer.invoke('file:show-error', message, detail)

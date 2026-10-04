@@ -1,6 +1,7 @@
 import { Moon, Sun, SunMoon } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { storeDefaults, type StoreSchema } from '../../../../shared/store'
+import { storeDefaults } from '../../../../shared/store'
+import type { StoreSchema } from '../../../../shared/store'
 import { HomePageButton } from '../HomePageButton'
 import { store } from '../../lib/store'
 

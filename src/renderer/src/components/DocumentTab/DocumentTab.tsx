@@ -1,11 +1,12 @@
-import { X } from 'lucide-react'
-import { NavLink } from 'react-router'
-import { Button } from '../primitives/Button'
+import { Link } from '@tanstack/react-router'
 import { cn } from 'cn'
+import { X } from 'lucide-react'
+import { Button } from '../primitives/Button'
 
 export type DocumentTabProps = {
   title: string
-  to: string
+  // The open document the tab shows — its editor is what the tab links to.
+  documentId: string
   isActive: boolean
   hasUnsavedChanges: boolean
   onClose: () => void
@@ -19,7 +20,7 @@ export type DocumentTabProps = {
 //
 // Unsaved changes follow VS Code: the close button shows a dot instead of the
 // cross, always, and turns back into the cross only while it is pointed at.
-export function DocumentTab({ title, to, isActive, hasUnsavedChanges, onClose }: DocumentTabProps) {
+export function DocumentTab({ title, documentId, isActive, hasUnsavedChanges, onClose }: DocumentTabProps) {
   return (
     // Opts out of the bar's drag region as a whole, so no part of a tab drags
     // the window instead of selecting it. A fixed width, so a tab never changes
@@ -37,16 +38,17 @@ export function DocumentTab({ title, to, isActive, hasUnsavedChanges, onClose }:
     >
       {/* The title takes the whole tab; the close button floats over its end.
           The tab on screen reads a step heavier than the ones behind it. */}
-      <NavLink
+      <Link
         className={cn(
           'min-w-0 flex-1 cursor-default truncate rounded-md px-1.5 leading-(--tab-height) focus-visible:outline-3 focus-visible:-outline-offset-1 focus-visible:outline-ring',
           isActive && 'font-semibold'
         )}
-        to={to}
+        to="/editor/$documentId"
+        params={{ documentId }}
         title={title}
       >
         {title}
-      </NavLink>
+      </Link>
       {/* Over the end of the title rather than beside it, so the title has the
           whole tab while the button is hidden. A gradient ahead of it fades the
           title out instead of cutting a letter in half.

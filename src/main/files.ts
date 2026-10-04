@@ -1,7 +1,8 @@
 import { randomUUID } from 'node:crypto'
 import { readFile, rename, rm, stat, writeFile } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+import { fileNameProblem } from '../shared/files'
 import type { CloseChoice, OpenedFile } from '../shared/files'
 import { store } from './store'
 
@@ -42,6 +43,26 @@ export function registerFileIpc(): void {
     // send the next one back to a folder that may be the reason it failed.
     store.set('saveFolder', dirname(result.filePath))
     return result.filePath
+  })
+
+  // Renames a document's file where it is, keeping it in its folder, and
+  // resolves to the new path.
+  ipcMain.handle('file:rename', async (_event, path: string, name: string): Promise<string> => {
+    const problem = fileNameProblem(name)
+    if (problem) throw new Error(problem)
+
+    const target = join(dirname(path), `${name}.numo`)
+    if (target === path) return path
+
+    // Never over another file. The one exception is the file itself under a
+    // different case, which a case-insensitive disk reports as already there.
+    const existing = await stat(target).catch(() => null)
+    if (existing && existing.ino !== (await stat(path)).ino) {
+      throw new Error(`A file named “${basename(target)}” already exists in this folder.`)
+    }
+
+    await rename(path, target)
+    return target
   })
 
   // The question a native editor asks before closing a document with unsaved

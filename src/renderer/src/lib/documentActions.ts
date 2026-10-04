@@ -1,5 +1,5 @@
-import { startTransition } from 'react'
-import { useMatch, useNavigate } from 'react-router'
+import { useNavigate, useParams } from '@tanstack/react-router'
+import { fileNameProblem } from '../../../shared/files'
 import { parseDocumentFile, serializeDocument } from './documentFile'
 import { documentTitle, hasUnsavedChanges, useDocuments } from './documents'
 import { createMockInvoiceDocument } from './invoice'
@@ -12,6 +12,9 @@ export type DocumentActions = {
   // Resolves to whether the document ended up on disk — false when the user
   // backed out of the save dialog or the write failed.
   saveDocument: (id: string, options?: { as?: boolean }) => Promise<boolean>
+  // Renames the document's file on disk, or names a never-saved one ahead of
+  // its first save.
+  renameDocument: (id: string, name: string) => Promise<void>
   closeDocument: (id: string) => Promise<void>
 }
 
@@ -21,10 +24,12 @@ export type DocumentActions = {
 export function useDocumentActions(): DocumentActions {
   const documents = useDocuments()
   const navigate = useNavigate()
-  const activeId = useMatch('/editor/:documentId')?.params.documentId
+  const activeId = useParams({ strict: false }).documentId
+
+  const showDocument = (documentId: string) => navigate({ to: '/editor/$documentId', params: { documentId } })
 
   const newDocument = () => {
-    navigate(`/editor/${documents.addDocument(createMockInvoiceDocument())}`)
+    void showDocument(documents.addDocument(createMockInvoiceDocument()))
   }
 
   const openDocument = async () => {
@@ -35,15 +40,15 @@ export function useDocumentActions(): DocumentActions {
     // which would leave two tabs editing it against each other.
     const existing = documents.documents.find((open) => open.filePath === file.path)
     if (existing) {
-      navigate(`/editor/${existing.id}`)
+      void showDocument(existing.id)
       return
     }
 
     try {
       const document = parseDocumentFile(file.contents)
-      navigate(`/editor/${documents.addDocument(document, file.path)}`)
+      void showDocument(documents.addDocument(document, file.path))
     } catch (error) {
-      await window.files.showError(`“${file.path}” could not be opened.`, (error as Error).message)
+      await window.files.showError(`“${file.path}” could not be opened.`, errorMessage(error))
     }
   }
 
@@ -69,8 +74,30 @@ export function useDocumentActions(): DocumentActions {
       documents.markSaved(id, filePath, document)
       return true
     } catch (error) {
-      await window.files.showError(`“${documentTitle(open)}” could not be saved.`, (error as Error).message)
+      await window.files.showError(`“${documentTitle(open)}” could not be saved.`, errorMessage(error))
       return false
+    }
+  }
+
+  const renameDocument = async (id: string, name: string) => {
+    const open = documents.documents.find((candidate) => candidate.id === id)
+    if (!open || name === documentTitle(open)) return
+
+    const problem = fileNameProblem(name)
+    if (problem) {
+      await window.files.showError(`“${documentTitle(open)}” could not be renamed.`, problem)
+      return
+    }
+
+    if (!open.filePath) {
+      documents.setDraftName(id, name)
+      return
+    }
+
+    try {
+      documents.setFilePath(id, await window.files.rename(open.filePath, name))
+    } catch (error) {
+      await window.files.showError(`“${documentTitle(open)}” could not be renamed.`, errorMessage(error))
     }
   }
 
@@ -84,23 +111,29 @@ export function useDocumentActions(): DocumentActions {
       if (choice === 'save' && !(await saveDocument(id))) return
     }
 
-    // One transition for both: the router applies navigation as a transition,
-    // and a close rendered ahead of it would leave the editor on a route whose
-    // document is gone, which it answers by going home.
-    startTransition(() => {
-      // Closing the tab on screen moves to its neighbour, the one to the right
-      // where there is one, the way native tab bars do. Home is where the last
-      // one leaves you.
-      if (id === activeId) {
-        const list = documents.documents
-        const index = list.findIndex((candidate) => candidate.id === id)
-        const next = list[index + 1] ?? list[index - 1]
-        navigate(next ? `/editor/${next.id}` : '/home')
-      }
+    // Closing the tab on screen moves to its neighbour, the one to the right
+    // where there is one, the way native tab bars do. Home is where the last
+    // one leaves you.
+    //
+    // The tab only goes once the move has rendered: closed any sooner, the
+    // editor would still be on a route whose document is gone, which it
+    // answers by going home.
+    if (id === activeId) {
+      const list = documents.documents
+      const index = list.findIndex((candidate) => candidate.id === id)
+      const next = list[index + 1] ?? list[index - 1]
+      await (next ? showDocument(next.id) : navigate({ to: '/' }))
+    }
 
-      documents.closeDocument(id)
-    })
+    documents.closeDocument(id)
   }
 
-  return { activeId, newDocument, openDocument, saveDocument, closeDocument }
+  return { activeId, newDocument, openDocument, saveDocument, renameDocument, closeDocument }
+}
+
+// What went wrong, fit for the error sheet. An error thrown in the main process
+// reaches the renderer wrapped in Electron's account of the IPC call that
+// carried it, which is noise to the user, so only the original message is kept.
+function errorMessage(error: unknown): string {
+  return (error as Error).message.replace(/^Error invoking remote method '[^']*': (\w*Error: )?/, '')
 }

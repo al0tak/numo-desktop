@@ -1,16 +1,14 @@
-import { Link } from '@tanstack/react-router'
-import { ChevronLeft } from 'lucide-react'
 import { useId } from 'react'
 import { Field, FieldLabel } from '../primitives/Field'
 import { Input } from '../primitives/Input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../primitives/Select'
 import { PAGE_FORMATS } from '../../lib/invoice'
 import type { PageFormat } from '../../lib/invoice'
-import { useDocumentPane } from './context'
+import type { InspectorPageProps } from './PropertyInspector'
+import { BackButton } from './BackButton'
 import { HEADING, PAGE } from './styles'
 
-export function FormatPage() {
-  const { invoice, onChange } = useDocumentPane()
+export function FormatPage({ invoice, onChange, onNavigate }: InspectorPageProps) {
   const fieldId = useId()
 
   const setFormat = (format: PageFormat) => {
@@ -35,15 +33,7 @@ export function FormatPage() {
 
   return (
     <div className={PAGE}>
-      {/* Above the heading it returns from and quieter than it, nudged left so
-          the chevron's empty side does not push it off the column's edge. */}
-      <Link
-        to="/"
-        className="-mb-1.5 -ml-1 inline-flex cursor-default items-center gap-0.5 self-start rounded-sm text-xs text-muted-foreground hover:text-foreground focus-visible:outline-3 focus-visible:-outline-offset-1 focus-visible:outline-ring"
-      >
-        <ChevronLeft className="size-3.5" aria-hidden="true" />
-        Document
-      </Link>
+      <BackButton onClick={() => onNavigate('root')} />
       <h2 className={HEADING}>Format</h2>
 
       <Field>

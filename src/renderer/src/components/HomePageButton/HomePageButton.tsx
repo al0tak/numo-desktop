@@ -1,6 +1,6 @@
+import { cn } from 'cn'
 import type { ComponentProps, ReactNode } from 'react'
 import { Button } from '../primitives/Button'
-import { cn } from 'cn'
 
 export type HomePageButtonProps = ComponentProps<typeof Button> & {
   /** Rendered above the label and hidden from assistive tech. */
