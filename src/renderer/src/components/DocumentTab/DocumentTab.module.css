@@ -1,31 +1,39 @@
-/* Opts out of the bar's drag region as a whole, so the gap between the title
-   and the close button is not a spot that drags the window instead. Shrinks
-   with the others once the bar runs out of room, down to a floor that still
-   shows a few characters of the title. */
+/* Opts out of the bar's drag region as a whole, so no part of a tab drags the
+   window instead of selecting it. A fixed width, so a tab never changes size
+   with its title or with what is typed into it — a long title truncates.
+
+   --tab-background is the tab's colour in each state, kept in a property so
+   the close button can fade the title out into whatever the tab is showing. */
 .tab {
+  --tab-background: var(--color-surface);
+
   -webkit-app-region: no-drag;
+  position: relative;
   display: flex;
   align-items: center;
-  flex: 0 1 200px;
-  min-width: 80px;
+  flex: none;
+  width: 180px;
   height: 28px;
-  padding: 0 4px 0 2px;
+  padding: 0 2px;
   border-radius: var(--control-radius);
+  background: var(--tab-background);
   color: var(--color-text-muted);
   font-size: 13px;
   transition: var(--control-transition);
 }
 
 .tab:hover {
-  background: var(--color-tab-hover);
+  --tab-background: var(--color-tab-hover);
 }
 
 .active,
 .active:hover {
-  background: var(--color-tab-active);
+  --tab-background: var(--color-tab-active);
+
   color: var(--color-text);
 }
 
+/* The title takes the whole tab; the close button floats over its end. */
 .link {
   flex: 1;
   min-width: 0;
@@ -70,26 +78,46 @@
   box-shadow: var(--control-focus-ring);
 }
 
+/* Over the end of the title rather than beside it, so the title has the whole
+   tab while the button is hidden. A gradient ahead of it fades the title out
+   instead of cutting a letter in half. */
 .close {
-  display: inline-flex;
-  flex: none;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: none;
   align-items: center;
   justify-content: center;
   width: 18px;
   height: 18px;
   border-radius: 4px;
-  opacity: 0;
-  transition: opacity 120ms ease;
+  background: var(--tab-background);
 }
 
-/* Hidden until the tab is hovered or shown, like the close buttons of a native
-   tab bar, so a row of tabs reads as a row of titles. */
+.close::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 100%;
+  width: 24px;
+  height: 100%;
+  background: linear-gradient(to right, transparent, var(--tab-background));
+  pointer-events: none;
+}
+
+/* Shown while the tab is pointed at or has keyboard focus, the way a native
+   tab bar does, so a row of tabs reads as a row of titles. */
 .tab:hover .close,
-.active .close,
-.close:focus-visible {
-  opacity: 1;
+.tab:focus-within .close {
+  display: inline-flex;
+}
+
+/* Except while the title is being edited: the button would sit over the end
+   of the text being typed. */
+.tab:has(.title:focus) .close {
+  display: none;
 }
 
 .close:hover {
-  background: var(--color-tab-hover);
+  background: color-mix(in srgb, var(--color-text) 10%, var(--tab-background));
 }

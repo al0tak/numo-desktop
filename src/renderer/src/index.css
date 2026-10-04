@@ -23,9 +23,10 @@
   --color-text-muted: color-mix(in srgb, var(--color-text) 55%, transparent);
   --color-border: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.1));
   /* Tabs in the top bar: a faint wash under the pointer, a firmer one for the
-     tab on screen. */
-  --color-tab-hover: light-dark(rgb(0 0 0 / 0.05), rgb(255 255 255 / 0.06));
-  --color-tab-active: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.1));
+     tab on screen. Mixed into the surface rather than laid over it, so they are
+     opaque — a tab's close button fades its title out into this colour. */
+  --color-tab-hover: color-mix(in srgb, var(--color-text) 5%, var(--color-surface));
+  --color-tab-active: color-mix(in srgb, var(--color-text) 9%, var(--color-surface));
 
   /* One box shared by every form control, so an input, a select and a textarea
      standing next to each other line up and read as the same kind of thing.
