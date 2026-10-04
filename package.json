@@ -5,6 +5,7 @@
   "private": true,
   "main": "out/main/index.js",
   "dependencies": {
+    "@tanstack/react-router": "^1.170.41",
     "electron-store": "^11.0.2",
     "lucide-react": "^1.28.0",
     "react": "^19.2.8",

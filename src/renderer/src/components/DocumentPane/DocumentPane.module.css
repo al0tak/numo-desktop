@@ -1,0 +1,91 @@
+/* One page of the pane — the same column of fields the rest of the sidebar
+   uses, so moving between the document's pages and an element's never shifts
+   anything. */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.heading {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  /* Pulled out to the panel's padding, so a row's hover reaches past the
+     column of text it holds while the text stays on the column's edge. */
+  margin: 0 -8px;
+}
+
+/* A row that opens a page: the group's name, its current value, and a chevron
+   saying it goes somewhere. */
+.navigationRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--control-height);
+  padding: 0 8px;
+  border-radius: var(--control-radius);
+  color: var(--color-text);
+  font-size: var(--control-font-size);
+  text-decoration: none;
+  /* A row is a control, not a hyperlink — see the cursor note in Button. */
+  cursor: default;
+  transition: var(--control-transition);
+}
+
+.navigationRow:hover {
+  background: var(--color-tab-hover);
+}
+
+.navigationRow:focus-visible,
+.backLink:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -1px;
+}
+
+.summary {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-muted);
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: none;
+  color: var(--color-text-muted);
+}
+
+/* Above the heading it returns from and quieter than it, nudged left so the
+   chevron's empty side does not push it off the column's edge. */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  align-self: flex-start;
+  margin: 0 0 -6px -4px;
+  border-radius: 4px;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  text-decoration: none;
+  cursor: default;
+}
+
+.backLink:hover {
+  color: var(--color-text);
+}

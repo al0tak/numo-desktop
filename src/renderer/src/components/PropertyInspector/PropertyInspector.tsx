@@ -1,17 +1,11 @@
 import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
+import { DocumentPane } from '../DocumentPane'
+import { Field } from '../Field'
 import { Input } from '../Input'
-import { Select } from '../Select'
 import { Textarea } from '../Textarea'
-import type {
-  InvoiceDocument,
-  InvoiceItem,
-  InvoiceSelection,
-  InvoiceTextElementId,
-  PageFormat
-} from '../../lib/invoice'
+import type { InvoiceDocument, InvoiceItem, InvoiceSelection, InvoiceTextElementId } from '../../lib/invoice'
 import {
-  PAGE_FORMATS,
   SELECTION_LABELS,
   inspectedSelection,
   isMultilineTextElement,
@@ -53,26 +47,6 @@ export function PropertyInspector({ invoice, selection, onChange }: PropertyInsp
     selectedField.current = field
   }
 
-  const setFormat = (format: PageFormat) => {
-    // Custom is not a size, it is the mark left when one is typed in by hand, so
-    // choosing it keeps the page exactly as it is.
-    if (format === 'custom') {
-      onChange({ ...invoice, format })
-      return
-    }
-
-    onChange({ ...invoice, format, ...PAGE_FORMATS[format] })
-  }
-
-  const setSize = (side: 'width' | 'height', value: number) => {
-    // An emptied or half-typed field reads as NaN, which would leave the page
-    // with no size at all. The field keeps what the user typed either way; the
-    // document only follows once it is a number again.
-    if (Number.isNaN(value)) return
-
-    onChange({ ...invoice, format: 'custom', [side]: value })
-  }
-
   const setText = (id: InvoiceTextElementId, value: string) => {
     onChange({ ...invoice, [id]: value })
   }
@@ -99,48 +73,13 @@ export function PropertyInspector({ invoice, selection, onChange }: PropertyInsp
     })
   }
 
+  // The document has more to it than fits one panel, so it gets a pane of
+  // pages to move through instead of a single list of fields.
+  if (inspected === 'document') return <DocumentPane invoice={invoice} onChange={onChange} />
+
   return (
     <div className={styles.inspector}>
       <h2 className={styles.heading}>{SELECTION_LABELS[inspected]}</h2>
-
-      {inspected === 'document' && (
-        <div className={styles.fields}>
-          <Field label="Format">
-            <Select
-              value={invoice.format}
-              onChange={(event) => setFormat(event.currentTarget.value as PageFormat)}
-            >
-              {Object.entries(PAGE_FORMATS).map(([format, { label }]) => (
-                <option key={format} value={format}>
-                  {label}
-                </option>
-              ))}
-              <option value="custom">Custom</option>
-            </Select>
-          </Field>
-
-          {/* The two sides of one size, side by side. */}
-          <div className={styles.row}>
-            <Field label="Width">
-              <Input
-                type="number"
-                min={1}
-                value={invoice.width}
-                onChange={(event) => setSize('width', event.currentTarget.valueAsNumber)}
-              />
-            </Field>
-
-            <Field label="Height">
-              <Input
-                type="number"
-                min={1}
-                value={invoice.height}
-                onChange={(event) => setSize('height', event.currentTarget.valueAsNumber)}
-              />
-            </Field>
-          </div>
-        </div>
-      )}
 
       {inspected === 'header' && (
         <div className={styles.fields}>
@@ -194,17 +133,6 @@ export function PropertyInspector({ invoice, selection, onChange }: PropertyInsp
         </div>
       )}
     </div>
-  )
-}
-
-// One control under its name. A label, so the name is the control's — clicking
-// it focuses the field, and a screen reader reads the two together.
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <label className={styles.field}>
-      <span className={styles.label}>{label}</span>
-      {children}
-    </label>
   )
 }
 

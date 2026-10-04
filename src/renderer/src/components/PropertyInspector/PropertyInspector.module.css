@@ -18,17 +18,6 @@
   gap: 14px;
 }
 
-/* Every control takes the panel's full width, so its name sits above it rather
-   than beside — one column of fields, all starting on the same edge. */
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  /* A field is a grid item in .row, and an input's default size would otherwise
-     hold its column open wider than the panel. */
-  min-width: 0;
-}
-
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
