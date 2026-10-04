@@ -18,6 +18,10 @@
   --color-text: light-dark(#1a1a1a, #ececec);
   --color-text-muted: color-mix(in srgb, var(--color-text) 55%, transparent);
   --color-border: light-dark(rgb(0 0 0 / 0.12), rgb(255 255 255 / 0.1));
+  /* Tabs in the top bar: a faint wash under the pointer, a firmer one for the
+     tab on screen. */
+  --color-tab-hover: light-dark(rgb(0 0 0 / 0.05), rgb(255 255 255 / 0.06));
+  --color-tab-active: light-dark(rgb(0 0 0 / 0.08), rgb(255 255 255 / 0.1));
 
   /* One box shared by every form control, so an input, a select and a textarea
      standing next to each other line up and read as the same kind of thing.
@@ -60,7 +64,7 @@ body {
   color: var(--color-text);
 }
 
-/* One cell holding both children: the drag strip floats over the content
+/* One cell holding both children: the tab bar floats over the content
    instead of stacking above it, so a page's panels still run the full height of
    the client area and pass under the window controls. */
 .app {
@@ -69,13 +73,15 @@ body {
   height: 100%;
 }
 
-/* With the OS title bar hidden this strip is the only thing left to drag the
+/* With the OS title bar hidden the tab bar is the only thing left to drag the
    window by, so it spans the full width. Anything interactive inside it must
-   opt out. */
+   opt out. Above the content, whose own layers (the editor's sidebar) would
+   otherwise compete with it. */
 .titlebar {
   -webkit-app-region: drag;
   grid-area: 1 / 1;
-  z-index: 1;
+  align-self: start;
+  z-index: 2;
   height: var(--titlebar-height);
   user-select: none;
 }

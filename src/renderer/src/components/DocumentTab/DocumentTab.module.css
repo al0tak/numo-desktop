@@ -1,0 +1,95 @@
+/* Opts out of the bar's drag region as a whole, so the gap between the title
+   and the close button is not a spot that drags the window instead. Shrinks
+   with the others once the bar runs out of room, down to a floor that still
+   shows a few characters of the title. */
+.tab {
+  -webkit-app-region: no-drag;
+  display: flex;
+  align-items: center;
+  flex: 0 1 200px;
+  min-width: 80px;
+  height: 28px;
+  padding: 0 4px 0 2px;
+  border-radius: var(--control-radius);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  transition: var(--control-transition);
+}
+
+.tab:hover {
+  background: var(--color-tab-hover);
+}
+
+.active,
+.active:hover {
+  background: var(--color-tab-active);
+  color: var(--color-text);
+}
+
+.link {
+  flex: 1;
+  min-width: 0;
+  padding: 0 6px;
+  overflow: hidden;
+  color: inherit;
+  line-height: 28px;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* A tab is a control, not a hyperlink — see the cursor note in Button. */
+  cursor: default;
+}
+
+.link:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -1px;
+  border-radius: var(--control-radius);
+}
+
+/* Reads as the tab's label until it is focused, when it shows itself as the
+   field it is. */
+.title {
+  flex: 1;
+  min-width: 0;
+  height: 24px;
+  padding: 0 5px;
+  border: 1px solid transparent;
+  border-radius: calc(var(--control-radius) - 2px);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  transition: var(--control-transition);
+}
+
+.title:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  background: var(--color-control-surface);
+  box-shadow: var(--control-focus-ring);
+}
+
+.close {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+/* Hidden until the tab is hovered or shown, like the close buttons of a native
+   tab bar, so a row of tabs reads as a row of titles. */
+.tab:hover .close,
+.active .close,
+.close:focus-visible {
+  opacity: 1;
+}
+
+.close:hover {
+  background: var(--color-tab-hover);
+}

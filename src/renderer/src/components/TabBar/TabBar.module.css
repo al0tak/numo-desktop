@@ -1,0 +1,55 @@
+/* The window's drag strip as well as its tab bar: with the OS title bar hidden
+   this is what the window is dragged by, so the bar drags and only the tabs and
+   the home button opt out. The macOS window controls sit at its left end, so
+   the home button starts clear of them (see trafficLightPosition in the main
+   process). */
+.tabBar {
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--titlebar-height);
+  padding: 0 10px 0 76px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  user-select: none;
+}
+
+.home {
+  -webkit-app-region: no-drag;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--control-radius);
+  color: var(--color-text-muted);
+  cursor: default;
+  transition: var(--control-transition);
+}
+
+.home:hover {
+  background: var(--color-tab-hover);
+}
+
+/* NavLink marks the route on screen with aria-current, which is what the
+   active look keys off rather than a class of our own. */
+.home[aria-current='page'] {
+  background: var(--color-tab-active);
+  color: var(--color-text);
+}
+
+.home:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: -1px;
+}
+
+/* The tabs do not drag, but the bar's empty space after the last one does —
+   that is the region left for moving the window. */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}

@@ -1,20 +1,35 @@
 import { useState } from 'react'
+import { Navigate, useParams } from 'react-router'
 import { DocumentPage } from '../components/DocumentPage'
-import { EditorTopBar } from '../components/EditorTopBar'
 import { EditorView } from '../components/EditorView'
 import { InvoiceView } from '../components/InvoiceView'
 import { PageSidebar } from '../components/PageSidebar'
 import { PropertyInspector } from '../components/PropertyInspector'
-import { createMockInvoiceDocument } from '../lib/invoice'
+import { useDocuments } from '../lib/documents'
+import type { OpenDocument } from '../lib/documents'
 import type { InvoiceSelection } from '../lib/invoice'
 import styles from './EditorPage.module.css'
 
-// Holds the document being edited and what is selected in it — the page is
-// where the canvas and the sidebar meet, and both are views of the same two
-// pieces of state.
+// The editor for whichever open document the route names. A tab that has been
+// closed, or an id that was never opened, has nothing to show and goes home.
 export function EditorPage() {
-  const [invoice, setInvoice] = useState(createMockInvoiceDocument)
+  const { documentId } = useParams()
+  const { documents } = useDocuments()
+  const open = documents.find(({ id }) => id === documentId)
+
+  if (!open) return <Navigate to="/home" replace />
+
+  // Keyed by the tab, so switching tabs starts the editor afresh rather than
+  // carrying one document's selection and zoom over to the next.
+  return <Editor key={open.id} open={open} />
+}
+
+// Holds what is selected in the document — the page is where the canvas and the
+// sidebar meet, and both are views of the document and the selection.
+function Editor({ open }: { open: OpenDocument }) {
+  const { updateDocument } = useDocuments()
   const [selection, setSelection] = useState<InvoiceSelection>('document')
+  const invoice = open.document
 
   return (
     <div className={styles.editor}>
@@ -26,13 +41,12 @@ export function EditorPage() {
         </DocumentPage>
       </EditorView>
       <PageSidebar className={styles.sidebar}>
-        <PropertyInspector invoice={invoice} selection={selection} onChange={setInvoice} />
+        <PropertyInspector
+          invoice={invoice}
+          selection={selection}
+          onChange={(document) => updateDocument(open.id, document)}
+        />
       </PageSidebar>
-      <EditorTopBar
-        className={styles.topBar}
-        title={invoice.title}
-        onTitleChange={(title) => setInvoice({ ...invoice, title })}
-      />
     </div>
   )
 }

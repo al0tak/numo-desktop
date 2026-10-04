@@ -5,8 +5,8 @@
 // an object with a `value` alongside whatever describes how it is drawn, and
 // only this file and the two components that read it have to follow.
 //
-// Nothing here is persisted — a document lives in the editor's state for the
-// lifetime of the window and is gone when it closes.
+// Nothing here is persisted — a document lives in its tab (see
+// DocumentsProvider) and is gone when the tab or the window closes.
 
 export type InvoiceItem = {
   id: string
