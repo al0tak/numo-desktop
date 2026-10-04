@@ -12,8 +12,8 @@ function createWindow(): void {
     show: false,
     titleBarStyle: 'hidden',
     // Vertically centred in the --titlebar-height strip the renderer keeps
-    // clear; x is the same inset macOS uses on a stock window.
-    trafficLightPosition: { x: 20, y: 16 },
+    // clear, and inset from the left by the same distance as from the top.
+    trafficLightPosition: { x: 17, y: 16 },
     // Windows and Linux have no traffic lights, so Electron draws the native
     // controls over the strip instead. A transparent background lets whichever
     // theme the renderer is in show through, which a fixed colour would not.
