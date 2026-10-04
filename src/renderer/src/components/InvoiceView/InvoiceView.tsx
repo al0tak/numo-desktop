@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { cx } from '../../lib/cx'
 import type { InvoiceDocument, InvoiceSelection, InvoiceTextElementId } from '../../lib/invoice'
+import { inspectedSelection } from '../../lib/invoice'
 import { InvoiceElement } from '../InvoiceElement'
 import styles from './InvoiceView.module.css'
 
@@ -14,12 +15,18 @@ export type InvoiceViewProps = {
 // select — that is all this component does with a pointer. The values it draws
 // are typed into the sidebar, which is the one place editing happens.
 export function InvoiceView({ invoice, selection, onSelect }: InvoiceViewProps) {
+  // What is drawn as picked, which for a part of a group is the whole group.
+  const inspected = inspectedSelection(selection)
+
   // Each text field's element id is its key on the document, so one helper
   // covers drawing it and wiring up its selection.
   const text = (id: InvoiceTextElementId, className?: string): ReactNode => (
     <InvoiceElement
       className={cx(styles.text, className)}
       isSelected={selection === id}
+      // An element that answers with something other than itself is inside a
+      // group, and the group is what carries the ring.
+      isPart={inspectedSelection(id) !== id}
       onSelect={() => onSelect(id)}
     >
       {invoice[id]}
@@ -28,30 +35,40 @@ export function InvoiceView({ invoice, selection, onSelect }: InvoiceViewProps) 
 
   return (
     <div className={styles.invoice}>
-      <header className={styles.head}>
-        <InvoiceElement
-          className={styles.logo}
-          isSelected={selection === 'logo'}
-          onSelect={() => onSelect('logo')}
-        >
-          {invoice.logo ? (
-            <img className={styles.logoImage} src={invoice.logo} alt="" />
-          ) : (
-            <span className={styles.logoPlaceholder}>Logo</span>
-          )}
-        </InvoiceElement>
-        <div className={styles.title}>
-          {text('name', styles.name)}
-          <div className={styles.meta}>
-            <span className={styles.metaLabel}>No.</span>
-            {text('number')}
-            <span className={styles.metaLabel}>Date</span>
-            {text('date')}
+      {/* Logo, title, number, date and the text under them are one block on the
+          page and one selection: a click anywhere in here inspects the header,
+          and the part it landed on is the part the sidebar leads with. */}
+      <InvoiceElement
+        className={styles.header}
+        isSelected={inspected === 'header'}
+        onSelect={() => onSelect('header')}
+      >
+        <div className={styles.head}>
+          <InvoiceElement
+            className={styles.logo}
+            isSelected={selection === 'logo'}
+            isPart
+            onSelect={() => onSelect('logo')}
+          >
+            {invoice.logo ? (
+              <img className={styles.logoImage} src={invoice.logo} alt="" />
+            ) : (
+              <span className={styles.logoPlaceholder}>Logo</span>
+            )}
+          </InvoiceElement>
+          <div className={styles.title}>
+            {text('name', styles.name)}
+            <div className={styles.meta}>
+              <span className={styles.metaLabel}>No.</span>
+              {text('number')}
+              <span className={styles.metaLabel}>Date</span>
+              {text('date')}
+            </div>
           </div>
         </div>
-      </header>
 
-      {text('header')}
+        {text('headerText')}
+      </InvoiceElement>
 
       <div className={styles.parties}>
         <section className={styles.party}>

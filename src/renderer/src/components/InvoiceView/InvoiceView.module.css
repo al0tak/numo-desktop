@@ -19,6 +19,15 @@
   min-height: 1em;
 }
 
+/* The header is one selection, so it is one box. Its parts keep the spacing
+   they had when they were siblings on the sheet — the gap here is the same one
+   the page sets between its own blocks. */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 8mm;
+}
+
 .head {
   display: flex;
   justify-content: space-between;

@@ -1,0 +1,35 @@
+/* Wrapped in :where() so these carry zero specificity — a consumer's own class
+   overrides them without caring which stylesheet the bundler emits first. */
+:where(.input) {
+  min-width: 0;
+  height: var(--control-height);
+  padding: 0 var(--control-padding);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--control-radius);
+  background: var(--color-control-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--control-font-size);
+  transition: var(--control-transition);
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Only until it takes focus, where the ring says the same thing louder. */
+.input:hover:not(:focus, :disabled) {
+  border-color: var(--color-control-border-hover);
+}
+
+/* The ring replaces the outline rather than joining it: two rings around one
+   box is what the default looks like once the border is coloured too. */
+.input:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: var(--control-focus-ring);
+}
+
+.input:disabled {
+  opacity: 0.5;
+}

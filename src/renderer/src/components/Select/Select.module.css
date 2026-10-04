@@ -1,0 +1,49 @@
+/* Wrapped in :where() so these carry zero specificity — a consumer's own class
+   overrides them without caring which stylesheet the bundler emits first. */
+:where(.wrapper) {
+  position: relative;
+  display: grid;
+  min-width: 0;
+}
+
+.select {
+  appearance: none;
+  min-width: 0;
+  height: var(--control-height);
+  /* Room on the right for the chevron sitting over the field. */
+  padding: 0 calc(var(--control-padding) * 2 + 14px) 0 var(--control-padding);
+  border: 1px solid var(--color-control-border);
+  border-radius: var(--control-radius);
+  background: var(--color-control-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--control-font-size);
+  /* Native apps keep the arrow over controls — the hand is a web hyperlink
+     affordance. */
+  cursor: default;
+  transition: var(--control-transition);
+}
+
+.select:hover:not(:focus, :disabled) {
+  border-color: var(--color-control-border-hover);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-focus);
+  box-shadow: var(--control-focus-ring);
+}
+
+.select:disabled {
+  opacity: 0.5;
+}
+
+.chevron {
+  position: absolute;
+  right: var(--control-padding);
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--color-text-muted);
+  /* The whole box opens the menu, chevron included. */
+  pointer-events: none;
+}

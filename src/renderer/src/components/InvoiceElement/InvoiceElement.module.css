@@ -7,11 +7,23 @@
   outline-offset: 1mm;
 }
 
-.invoiceElement:hover {
+.invoiceElement:not(.part):hover {
   outline-color: color-mix(in srgb, var(--color-focus) 40%, transparent);
 }
 
-.selected,
-.selected:hover {
+.selected:not(.part),
+.selected:not(.part):hover {
   outline: 2px solid var(--color-focus);
+}
+
+/* The part of a selected group that the click landed on, marked with a wash
+   rather than a ring so it reads as being inside the group's ring and not as a
+   second selection. It is spread past the box by the same millimetre the ring
+   stands off by, so a short run of text is marked as generously as a whole
+   element is. */
+.part.selected {
+  --tint: color-mix(in srgb, var(--color-focus) 14%, transparent);
+
+  background: var(--tint);
+  box-shadow: 0 0 0 1mm var(--tint);
 }
